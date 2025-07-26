@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title><%= title %></title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
+.container { max-width: 900px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.seeker-card { border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin-bottom: 15px; background-color: #fff; }
+.seeker-card h3 { margin-top: 0; }
+.match-score { font-weight: bold; color: #28a745; font-size: 1.1em; float: right; }
+.seeker-meta span { margin-right: 15px; color: #6c757d; font-size: 0.9em; }
+.skills-preview { font-size: 0.85em; color: #555; margin-top: 5px; }
+.skills-preview strong { color: #333;}
+</style>
+</head>
+ <body>
+     <div class="container">
+         <%- include('../partials/nav') %>
+         <h1><%= title %></h1>
+         <p>Listing potential candidates for: <strong><%= job.jobTitle %></strong> at <%= job.companyName %></p>
+
+         <% if (seekers && seekers.length > 0) { %>
+             <p>Found <%= seekers.length %> matched seeker(s).</p>
+             <% seekers.forEach(function(seeker) { %>
+                 <div class="seeker-card">
+                     <span class="match-score">Match: <%= (seeker.matchScore * 100).toFixed(0) %>%</span>
+                     <h3><%= seeker.fullName %></h3>
+                     <% if (seeker.user && seeker.user.email) { %>
+                         <p class="seeker-meta"><span>Email: <%= seeker.user.email %></span></p>
+                     <% } %>
+                     <% const degree = locals.degreeLevelsList && degreeLevelsList.find(d => d.id === seeker.degreeLevel); %>
+                     <% const field = locals.fieldsOfStudyList && fieldsOfStudyList.find(f => f.id === seeker.fieldOfStudy); %>
+                     <p class="seeker-meta">
+                         <span><strong>Degree:</strong> <%= degree ? degree.text : seeker.degreeLevel %></span>
+                         <span><strong>Field:</strong> <%= field ? field.text : seeker.fieldOfStudy %></span>
+                     </p>
+                     <% if (seeker.skills && seeker.skills.length > 0) { %>
+                         <p class="skills-preview">
+                             <strong>Top Skills:</strong>
+                             <% seeker.skills.slice(0, 5).forEach((skillId, index) => { %>
+                                 <% const skillObj = locals.skillsList && skillsList.find(s => s.id === skillId); %>
+                                 <%= skillObj ? skillObj.text : skillId %><%= index < Math.min(4, seeker.skills.length - 1) ? ', ' : '' %>
+                             <% }); %>
+                             <%= seeker.skills.length > 5 ? '...' : '' %>
+                         </p>
+                     <% } %>
+
+                     <!-- You'll need a route to view a specific seeker's profile from a recruiter's perspective -->
+                     <!-- <a href="/profile/seeker/<%= seeker.user_id %>" class="btn-view-profile">View Full Profile</a> -->
+                     <p style="font-size:0.8em; color: #888;">(Viewing full seeker profiles by recruiters - TBD)</p>
+                 </div>
+             <% }); %>
+         <% } else { %>
+             <p>No highly matched seekers found for this job at the moment.</p>
+         <% } %>
+         <br>
+         <a href="/jobs/my">Back to My Job Postings</a>
+     </div>
+ </body>
+ </html>

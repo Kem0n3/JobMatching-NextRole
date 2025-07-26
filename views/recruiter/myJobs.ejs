@@ -1,0 +1,31 @@
+<!-- views/recruiter/myJobs.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... head content ... -->
+</head>
+<body>
+    <div class="container">
+        <%- include('../partials/nav') %>
+        <h1><%= title %></h1>
+
+        <a href="/jobs/new" style="display:inline-block; margin-bottom:20px; padding:10px; background-color:#28a745; color:white; text-decoration:none; border-radius:4px;">Post New Job</a>
+
+        <% if (jobs && jobs.length > 0) { %>
+            <% jobs.forEach(function(job) { %>
+                <div class="job-listing">
+                    <h3><a href="/jobs/<%= job._id %>"><%= job.jobTitle %></a> at <%= job.companyName %></h3>
+                    <p><strong>Status:</strong> <%= job.isActive ? 'Active' : 'Inactive' %></p>
+                    <p><strong>Posted:</strong> <%= new Date(job.postedDate).toLocaleDateString() %></p>
+                    <a href="/jobs/<%= job._id %>/edit">Edit</a>
+                    <a href="/jobs/<%= job._id %>">View Publicly</a>
+                    <a href="/applications/job/<%= job._id %>/applicants">View Applicants</a>
+                    <a href="/matches/seekers/<%= job._id %>">View Matched Seekers</a> <!-- THIS IS THE CORRECT PLACE -->
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>You have not posted any jobs yet.</p>
+        <% } %>
+    </div>
+</body>
+</html>

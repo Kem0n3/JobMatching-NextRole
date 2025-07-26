@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
+        .navbar { background-color: #343a40; padding: 10px 20px; margin-bottom: 20px; }
+        .navbar a { color: white; text-decoration: none; margin-right: 15px; }
+        .container { max-width: 900px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .job-header { margin-bottom: 20px; padding-bottom:15px; border-bottom: 1px solid #eee;}
+        .applicant-card { border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin-bottom: 15px; }
+        .applicant-card h3 { margin-top: 0; color: #007bff; }
+        .applicant-meta span { margin-right: 15px; color: #6c757d; font-size: 0.9em; }
+        .tags-list { list-style: none; padding: 0; margin-top: 5px; }
+        .tags-list li { background-color: #e9ecef; color: #495057; display: inline-block; padding: 4px 8px; margin-right: 5px; margin-bottom: 5px; border-radius: 12px; font-size: 0.8em;}
+        .profile-snippet p { margin: 5px 0; font-size: 0.9em;}
+        .status-update-form { margin-top: 10px; display: flex; align-items: center; gap: 10px; }
+        .status-update-form select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; min-width: 150px;}
+        .status-update-form button { padding: 5px 10px; background-color: #007bff; color: white; border:none; border-radius:4px; cursor:pointer; }
+        .status-update-form button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <%- include('../partials/nav') %>
+    </div>
+    <div class="container">
+        <h1><%= title %></h1>
+        <div class="job-header">
+            <p>Viewing applicants for your job posting: <strong><a href="/jobs/<%= job._id %>"><%= job.jobTitle %></a></strong></p>
+        </div>
+
+        <% if (applications && applications.length > 0) { %>
+            <p>Found <%= applications.length %> application(s).</p>
+            <% applications.forEach(function(app) { %>
+                <div class="applicant-card">
+                    <% if (app.seeker_user_id && app.seekerProfile) { %>
+                        <h3><%= app.seekerProfile.fullName || app.seeker_user_id.username %></h3>
+                        <p class="applicant-meta">
+                            <span>Email: <%= app.seeker_user_id.email %></span> |
+                            <span>Applied: <%= new Date(app.applicationDate).toLocaleDateString() %></span> |
+                            <span>Status: <%= app.status %></span>
+                        </p>
+
+                        <div class="profile-snippet">
+                            <% const degree = locals.degreeLevelsList && degreeLevelsList.find(d => d.id === app.seekerProfile.degreeLevel); %>
+                            <% const field = locals.fieldsOfStudyList && fieldsOfStudyList.find(f => f.id === app.seekerProfile.fieldOfStudy); %>
+                            <p>
+                                <strong>Education:</strong>
+                                <%= degree ? degree.text : (app.seekerProfile.degreeLevel || 'N/A') %>
+                                <% if (field) { %> - <%= field.text %><% } else if (app.seekerProfile.fieldOfStudy) { %> - <%= app.seekerProfile.fieldOfStudy %><% } %>
+                            </p>
+
+                            <% if (app.seekerProfile.categoryExperience && app.seekerProfile.categoryExperience.length > 0) { %>
+                                <p><strong>Category Experience:</strong>
+                                <% app.seekerProfile.categoryExperience.forEach((exp, index) => { %>
+                                    <% const catObj = locals.broaderCategoriesList && broaderCategoriesList.find(c => c.id === exp.category_id); %>
+                                    <%= catObj ? catObj.text : exp.category_id %> (<%= exp.years %> yrs)<%= index < app.seekerProfile.categoryExperience.length - 1 ? '; ' : '' %>
+                                <% }); %>
+                                </p>
+                            <% } %>
+
+                            <% if (app.seekerProfile.skills && app.seekerProfile.skills.length > 0) { %>
+                                <p><strong>Skills:</strong></p>
+                                <ul class="tags-list">
+                                    <% app.seekerProfile.skills.slice(0,7).forEach(skillId => { %>
+                                        <% const skillObj = locals.skillsList && skillsList.find(s => s.id === skillId); %>
+                                        <li><%= skillObj ? skillObj.text : skillId %></li>
+                                    <% }); %>
+                                    <%= app.seekerProfile.skills.length > 7 ? '...' : '' %>
+                                </ul>
+                            <% } %>
+                        </div>
+                        <!-- Placeholder for actions like "View Full Profile", "Change Status" -->
+                        <form class="status-update-form" action="/applications/status/<%= app._id %>" method="POST">
+                            <label for="status_<%= app._id %>" style="margin:0; font-weight:normal;">Change Status:</label>
+                            <select name="newStatus" id="status_<%= app._id %>">
+                                <% const statuses = ['Applied', 'Viewed', 'Under Review', 'Interviewing', 'Offered', 'Hired', 'Rejected', 'Withdrawn']; %>
+                                <% statuses.forEach(s => { %>
+                                    <option value="<%= s %>" <%= app.status === s ? 'selected' : '' %>><%= s %></option>
+                                <% }); %>
+                            </select>
+                            <button type="submit">Update</button>
+                        </form>
+
+
+                        <!-- <a href="/profile/seeker/<%= app.seeker_user_id._id %>">View Full Seeker Profile</a> -->
+                    
+
+                    <% } else { %>
+                        <p>Error: Applicant information incomplete for one application.</p>
+                        <p><small>Application ID: <%= app._id %></small></p>
+                    <% } %>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No applications received for this job yet.</p>
+        <% } %>
+        <br>
+        <a href="/jobs/my" style="color: #007bff; text-decoration: none;">« Back to My Job Postings</a>
+    </div>
+</body>
+</html>

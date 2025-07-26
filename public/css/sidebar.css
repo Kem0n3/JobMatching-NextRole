@@ -1,0 +1,143 @@
+/* public/css/sidebar.css */
+.sidebar-container {
+    background-color: var(--color-sidebar-bg); /* White */
+    color: var(--color-sidebar-text);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 0; /* No padding on the main container */
+}
+
+.sidebar-logo-area {
+    height: var(--navbar-height); /* Match navbar height */
+    display: flex;
+    align-items: center;
+    padding: 0 25px; /* Horizontal padding */
+    /* border-bottom: 1px solid var(--color-sidebar-border); */
+    flex-shrink: 0;
+    margin-bottom: 5px;
+}
+
+.sidebar-logo-link {
+    display: flex;
+    align-items: center;
+    font-size: 1.5em; /* Adjusted */
+    font-weight: 700;
+    color: var(--color-text-strong);
+    text-decoration: none;
+}
+
+.sidebar-logo-link .logo-icon {
+    margin-right: 10px;
+    width: 30px; /* Adjust icon size */
+    height: 30px;
+    fill: var(--color-accent-interactive); /* Use interactive blue for logo icon */
+}
+.sidebar-logo-link:hover {
+    color: var(--color-text-strong); /* No hover color change for logo text */
+    text-decoration: none;
+}
+.sidebar-logo-link:hover .logo-icon {
+    fill: var(--color-accent-action); /* Red on hover for icon */
+}
+
+
+.sidebar-navigation {
+    flex-grow: 1;
+    padding: 20px 0; /* Padding top/bottom for the nav list area */
+    overflow-y: auto;
+}
+
+.sidebar-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav-list li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 25px; /* Consistent padding */
+    margin: 4px 15px; /* Margin to create space for rounded active bg */
+    color: var(--color-sidebar-text);
+    text-decoration: none;
+    font-size: 0.95em;
+    font-weight: 500;
+    border-radius: var(--border-radius-sm); /* Rounded corners for links */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-logo-link .logo-icon { /* For the logo icon if it's a Material Symbol */
+    margin-right: 10px;
+    font-size: 30px; /* Adjust size of the font icon */
+    color: var(--color-accent-interactive);
+    transition: color 0.2s ease;
+    vertical-align: middle; /* Helps align with text */
+}
+.sidebar-logo-link:hover .logo-icon {
+    color: var(--color-accent-action);
+}
+
+
+.sidebar-nav-list li a .nav-icon { /* This now targets the <span> */
+    font-size: 22px; /* Adjust icon size */
+    margin-right: 15px;
+    color: var(--color-sidebar-icon); /* Default icon color */
+    transition: color 0.2s ease;
+    line-height: 1; /* Ensure proper vertical alignment */
+    vertical-align: middle; /* Align icon with text */
+}
+
+.sidebar-nav-list li a:hover .nav-icon {
+    color: var(--color-sidebar-active-text); /* Hover icon color */
+}
+
+.sidebar-nav-list li.active a .nav-icon {
+    color: var(--color-sidebar-active-indicator); /* Active icon color */
+    /* You can also adjust font-weight or other properties for active icons */
+    /* Example: font-variation-settings: 'FILL' 1, 'wght' 600; if using customizable symbols */
+}
+
+
+.sidebar-footer { /* Changed from .sidebar-logout for clarity */
+    padding: 15px 25px;
+    margin-top: auto; /* Pushes to bottom */
+    border-top: 1px solid var(--color-sidebar-border);
+    flex-shrink: 0;
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align icon and text left */
+    width: 90%;
+    padding: 12px 15px; /* Padding inside button */
+    background-color: transparent;
+    color: var(--color-sidebar-text); /* Match nav link color */
+    border: none; /* No border by default */
+    border-radius: var(--border-radius-sm);
+    font-size: 0.95em;
+    font-weight: 500;
+    text-decoration: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.logout-button .nav-icon {
+    font-size: 22px;
+    margin-right: 10px;
+    color: var(--color-sidebar-text); /* Match button text color */
+    transition: color 0.2s ease;
+    vertical-align: middle;
+}
+
+.logout-button:hover {
+    background-color: rgba(240, 84, 84, 0.1); /* Light red background on hover */
+    color: var(--color-accent-action); /* Red text on hover */
+}
+.logout-button:hover .nav-icon {
+    stroke: var(--color-accent-action);
+    color: white; 
+}

@@ -1,0 +1,82 @@
+<%# views/partials/sidebar.ejs %>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=browse" />
+<aside class="sidebar-area sidebar-container">
+    <div class="sidebar-logo-area">
+        <a href="/" class="sidebar-logo-link">
+            <%# Example: Using a 'dashboard_customize' symbol for the logo area %>
+            <span class="material-symbols-outlined logo-icon">dashboard_customize</span>
+            <span>NextRole</span>
+        </a>
+    </div>
+
+    <nav class="sidebar-navigation">
+        <ul class="sidebar-nav-list">
+            <% if (isAuthenticated && currentUser.role === 'seeker') { %>
+                <li class="<%= (locals.activeNavItem === 'dashboard') ? 'active' : '' %>">
+                    <a href="/dashboard">
+                        <span class="material-symbols-outlined nav-icon">dashboard</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'profileSetup') ? 'active' : '' %>">
+                    <a href="/profile/form">
+                        <span class="material-symbols-outlined nav-icon">person</span>
+                        <span>Profile Setup</span>
+                    </a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'browseJobs') ? 'active' : '' %>">
+                    <a href="/browse/jobs">
+                        <span class="material-symbols-outlined nav-icon">work_outline</span>
+                        <span>Browse Jobs</span>
+                    </a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'matchedJobs') ? 'active' : '' %>">
+                    <a href="/matches/jobs">
+                        <span class="material-symbols-outlined nav-icon">saved_search</span>
+                        <span>Matched Jobs</span>
+                    </a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'myApplications') ? 'active' : '' %>">
+                    <a href="/applications/my">
+                        <span class="material-symbols-outlined nav-icon">description</span>
+                        <span>My Applications</span>
+                    </a>
+                </li>
+            <% } else if (isAuthenticated && currentUser.role === 'recruiter') { %>
+                <li class="<%= (locals.activeNavItem === 'dashboard') ? 'active' : '' %>">
+                    <a href="/dashboard">
+                        <span class="material-symbols-outlined nav-icon">dashboard</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'postJob') ? 'active' : '' %>">
+                    <a href="/jobs/new">
+                        <span class="material-symbols-outlined nav-icon">post_add</span>
+                        <span>Post New Job</span>
+                    </a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'myJobs') ? 'active' : '' %>">
+                    <a href="/jobs/my">
+                        <span class="material-symbols-outlined nav-icon">list_alt</span>
+                        <span>My Jobs</span>
+                    </a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'browseSeekers') ? 'active' : '' %>">
+                    <a href="/browse/seekers">
+                        <span class="material-symbols-outlined nav-icon">group</span>
+                        <span>Browse Seekers</span>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+        <% if (isAuthenticated) { %>
+            <a href="/auth/logout" class="logout-button">
+                <span class="material-symbols-outlined nav-icon">logout</span>
+                <span>Logout</span>
+            </a>
+        <% } %>
+    </div>
+</aside>

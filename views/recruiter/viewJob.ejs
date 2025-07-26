@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - <%= job.companyName %></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; color: #333; }
+        .navbar { background-color: #343a40; padding: 10px 20px; margin-bottom: 20px; }
+        .navbar a { color: white; text-decoration: none; margin-right: 15px; }
+        .container { max-width: 900px; margin: 20px auto; padding: 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1, h2, h3, h4 { color: #343a40; }
+        h1 { font-size: 2.2em; margin-bottom: 5px; }
+        h3.company-name { font-size: 1.5em; color: #6c757d; margin-top: 0; margin-bottom: 20px; }
+        .job-meta { font-size: 0.9em; color: #6c757d; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .job-detail-section { margin-bottom: 25px; }
+        .job-detail-section h4 { font-size: 1.2em; color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-bottom: 15px; }
+        p, li { line-height: 1.7; color: #495057; }
+        strong { color: #212529; }
+        .tags-list { list-style: none; padding: 0; margin-top: 10px; }
+        .tags-list li {
+            background-color: #e9ecef; color: #495057; display: inline-block;
+            padding: 6px 12px; margin-right: 8px; margin-bottom: 8px;
+            border-radius: 15px; font-size: 0.9em;
+        }
+        .action-button { /* General class for apply/edit buttons */
+            display: inline-block; padding: 12px 25px; color: white;
+            text-decoration: none; border-radius: 5px; font-size: 1.1em; margin-top: 10px;
+            transition: background-color 0.2s ease-in-out; border: none; cursor: pointer;
+        }
+        .apply-button { background-color: #28a745; }
+        .apply-button:hover { background-color: #218838; }
+        .edit-button { background-color: #17a2b8; }
+        .edit-button:hover { background-color: #117a8b; }
+        pre { white-space: pre-wrap; font-family: inherit; font-size: 1em; background-color: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <%- include('../partials/nav') %>
+    </div>
+
+    <div class="container">
+        <h1><%= job.jobTitle %></h1>
+        <h3 class="company-name">at <%= job.companyName %></h3>
+
+        <p class="job-meta">
+            <strong>Posted:</strong> <%= new Date(job.postedDate).toLocaleDateString() %>
+            <% if (job.recruiter_id && job.recruiter_id.username) { %>
+                | <strong>By:</strong> <%= job.recruiter_id.username %>
+            <% } %>
+            <% if (!job.isActive) { %>
+                | <strong style="color:red;">This job is no longer active.</strong>
+            <% } %>
+        </p>
+
+        <!-- Job Description, Key Details, Education & Exp, Skills sections as before -->
+        <div class="job-detail-section">
+            <h4>Job Description</h4>
+            <pre><%= job.jobDescription %></pre>
+        </div>
+
+        <div class="job-detail-section">
+            <h4>Key Details</h4>
+            <p><strong>Location:</strong>
+                <% const locObj = locals.locationsList && locationsList.find(l => l.id === job.jobLocation); %>
+                <%= locObj ? locObj.text : job.jobLocation %>
+            </p>
+            <p><strong>Remote Option:</strong> <%= job.allowsRemote ? 'Yes, this job can be performed remotely' : 'No, primarily on-site' %></p>
+            <p><strong>Job Type:</strong>
+                <% const jobTypeObj = locals.jobTypeList && jobTypeList.find(jt => jt.id === job.jobType); %>
+                <%= jobTypeObj ? jobTypeObj.text : job.jobType %>
+            </p>
+            <p><strong>Career Level:</strong>
+                <% const careerLevelObj = locals.careerLevelsList && careerLevelsList.find(cl => cl.id === job.careerLevel); %>
+                <%= careerLevelObj ? careerLevelObj.text : job.careerLevel %>
+            </p>
+            <% if (job.salaryRange) { %>
+                <p><strong>Salary Range:</strong> <%= job.salaryRange %></p>
+            <% } %>
+        </div>
+
+        <div class="job-detail-section">
+            <h4>Education & Experience Requirements</h4>
+            <% const degreeObj = locals.degreeLevelsList && degreeLevelsList.find(d => d.id === job.minimumDegreeLevel); %>
+            <p><strong>Minimum Degree:</strong> <%= degreeObj ? degreeObj.text : job.minimumDegreeLevel %></p>
+            <% if (job.preferredFieldOfStudy) { %>
+                <% const fieldObj = locals.fieldsOfStudyList && fieldsOfStudyList.find(f => f.id === job.preferredFieldOfStudy); %>
+                <p><strong>Preferred Field of Study:</strong> <%= fieldObj ? fieldObj.text : job.preferredFieldOfStudy %></p>
+            <% } %>
+
+            <% if (job.experienceRequirements && job.experienceRequirements.length > 0) { %>
+                <p><strong>Category Experience Needed:</strong></p>
+                <ul>
+                    <% job.experienceRequirements.forEach(expReq => { %>
+                        <% const catObj = locals.broaderCategoriesList && broaderCategoriesList.find(c => c.id === expReq.category_id); %>
+                        <li>
+                            <strong><%= catObj ? catObj.text : expReq.category_id %>:</strong>
+                            Minimum <%= expReq.minYears %> years
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <p>Specific category experience years not listed.</p>
+            <% } %>
+        </div>
+
+        <div class="job-detail-section">
+            <h4>Required Skills</h4>
+            <% if (job.requiredSkills && job.requiredSkills.length > 0) { %>
+                <ul class="tags-list">
+                    <% job.requiredSkills.forEach(skillId => { %>
+                        <% const skillObj = locals.skillsList && skillsList.find(s => s.id === skillId); %>
+                        <li><%= skillObj ? skillObj.text : skillId %></li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <p>No specific required skills listed.</p>
+            <% } %>
+        </div>
+
+        <% if (job.preferredSkills && job.preferredSkills.length > 0) { %>
+            <div class="job-detail-section">
+                <h4>Preferred Skills</h4>
+                <ul class="tags-list">
+                    <% job.preferredSkills.forEach(skillId => { %>
+                        <% const skillObj = locals.skillsList && skillsList.find(s => s.id === skillId); %>
+                        <li><%= skillObj ? skillObj.text : skillId %></li>
+                    <% }); %>
+                </ul>
+            </div>
+        <% } %>
+
+        <!-- Action Buttons Section -->
+        <div class="job-detail-section">
+            <% if (isAuthenticated && currentUser.role === 'seeker' && job.isActive) { %>
+                <% if (typeof hasApplied !== 'undefined' && hasApplied) { %>
+                    <p style="color: green; font-weight: bold;">You have already applied for this job.</p>
+                    <% if (applicationStatus) { %>
+                        <p><small>Your Application Status: <%= applicationStatus %></small></p>
+                    <% } %>
+                <% } else { %>
+                    <form action="/applications/apply/<%= job._id %>" method="POST" style="display:inline;">
+                        <button type="submit" class="action-button apply-button">Apply Now</button>
+                    </form>
+                <% } %>
+            <% } else if (isOwner) { %> <%# isOwner is passed from the route if current user is recruiter and owns job %>
+                <a href="/jobs/<%= job._id %>/edit" class="action-button edit-button">Edit This Job</a>
+                <a href="/applications/job/<%= job._id %>/applicants" class="action-button" style="background-color: #ffc107; color: #212529;">View Applicants</a>
+            <% } %>
+        </div>
+
+        <br>
+        <a href="/dashboard" style="color: #007bff; text-decoration: none;">« Back to Dashboard</a>
+    </div>
+</body>
+</html>

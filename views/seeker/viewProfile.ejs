@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #333; }
+        p, li { color: #555; line-height: 1.6; }
+        strong { color: #444; }
+        .profile-section { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;}
+        .profile-section:last-child { border-bottom: none; }
+        .tags-list { list-style: none; padding: 0; } /* Renamed from skills-list for generality */
+        .tags-list li { background-color: #e9ecef; color: #495057; display: inline-block; padding: 5px 10px; margin-right: 5px; margin-bottom: 5px; border-radius: 4px; }
+        .edit-link { display: inline-block; margin-top: 20px; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <%- include('../partials/nav') %>
+        <h1><%= title %></h1>
+
+        <% if (profileData) { %>
+            <div class="profile-section">
+                <h2>General Information</h2>
+                <p><strong>Full Name:</strong> <%= profileData.fullName %></p>
+                <p><strong>Email:</strong> <%= currentUser.email %></p>
+                <p><strong>Willing to Work Remotely:</strong> <%= profileData.isWillingToRemote ? 'Yes' : 'No' %></p>
+                <% if (profileData.summary) { %>
+                    <p><strong>Summary:</strong> <pre style="white-space: pre-wrap; font-family: inherit;"><%= profileData.summary %></pre></p>
+                <% } %>
+            </div>
+
+            <div class="profile-section">
+                <h2>Skills</h2>
+                <% if (profileData.skills && profileData.skills.length > 0) { %>
+                    <ul class="tags-list">
+                        <% profileData.skills.forEach(skillId => { %>
+                            <% const skillObj = skillsList.find(s => s.id === skillId); %>
+                            <li><%= skillObj ? skillObj.text : skillId %></li>
+                        <% }); %>
+                    </ul>
+                <% } else { %><p>No skills listed.</p><% } %>
+            </div>
+
+            <div class="profile-section">
+                <h2>Category Experience</h2>
+                <% if (profileData.categoryExperience && profileData.categoryExperience.length > 0) { %>
+                    <ul>
+                        <% profileData.categoryExperience.forEach(exp => { %>
+                            <% const catObj = broaderCategoriesList.find(c => c.id === exp.category_id); %>
+                            <li><strong><%= catObj ? catObj.text : exp.category_id %>:</strong> <%= exp.years %> years</li>
+                        <% }); %>
+                    </ul>
+                <% } else { %><p>No category experience listed.</p><% } %>
+            </div>
+
+            <div class="profile-section">
+                <h2>Education</h2>
+                <% const degree = degreeLevelsList.find(d => d.id === profileData.degreeLevel); %>
+                <% const field = fieldsOfStudyList.find(f => f.id === profileData.fieldOfStudy); %>
+                <p><strong>Degree Level:</strong> <%= degree ? degree.text : profileData.degreeLevel %></p>
+                <p><strong>Field of Study:</strong> <%= field ? field.text : profileData.fieldOfStudy %></p>
+            </div>
+
+             <div class="profile-section">
+                <h2>Job Preferences</h2>
+                 <p><strong>Desired Job Types:</strong></p>
+                <% if (profileData.desiredJobTypes && profileData.desiredJobTypes.length > 0) { %>
+                    <ul class="tags-list">
+                        <% profileData.desiredJobTypes.forEach(typeId => { %>
+                            <% const typeObj = jobTypeList.find(t => t.id === typeId); %>
+                            <li><%= typeObj ? typeObj.text : typeId %></li>
+                        <% }); %>
+                    </ul>
+                <% } else { %><p>No desired job types specified.</p><% } %>
+
+                <p><strong>Preferred Locations:</strong></p>
+                <% if (profileData.preferredLocations && profileData.preferredLocations.length > 0) { %>
+                    <ul class="tags-list">
+                        <% profileData.preferredLocations.forEach(locId => { %>
+                            <% const locObj = locationsList.find(l => l.id === locId); %>
+                            <li><%= locObj ? locObj.text : locId %></li>
+                        <% }); %>
+                    </ul>
+                <% } else { %><p>No specific location preferences listed.</p><% } %>
+            </div>
+
+
+            <a href="/profile/form" class="edit-link">Edit Profile</a>
+        <% } else { %>
+            <p>Profile not found. Please create your profile.</p>
+            <a href="/profile/form" class="edit-link">Create Profile</a>
+        <% } %>
+        <br><br>
+        <a href="/dashboard">Back to Dashboard</a>
+    </div>
+</body>
+</html>

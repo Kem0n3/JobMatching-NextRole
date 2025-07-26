@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; }
+        label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd;
+            border-radius: 4px; box-sizing: border-box;
+        }
+        .select2-container .select2-selection--multiple { min-height: 40px !important; border: 1px solid #ddd !important; border-radius: 4px !important;}
+        .select2-container--default .select2-selection--single { height: 40px !important; padding: 0; border: 1px solid #ddd !important; border-radius: 4px !important;}
+        .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 38px !important; padding-left: 10px !important;}
+        .select2-container--default .select2-selection--single .select2-selection__arrow { height: 38px !important; }
+
+        button[type="submit"] { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px; }
+        button[type="submit"]:hover { background-color: #0056b3; }
+        .error-messages { color: red; list-style-type: none; padding-left: 0; margin-bottom: 15px; }
+        .checkbox-label { display: inline-block !important; margin-left: 5px; font-weight: normal; }
+        .form-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px dashed #ccc; }
+        .form-section:last-child { border-bottom: none; }
+        .dynamic-entry { border: 1px solid #e0e0e0; padding: 15px; margin-bottom: 15px; border-radius: 5px; background-color: #f9f9f9; position:relative; }
+        .remove-btn { position: absolute; top:10px; right:10px; background-color: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .add-btn { background-color: #28a745; color:white; padding: 8px 12px; border:none; border-radius:4px; cursor:pointer; font-size: 14px; margin-top:10px;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <%- include('../partials/nav') %>
+        <h1><%= title %></h1>
+
+        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <ul class="error-messages">
+                <% errors.forEach(function(error) { %> <li><%= error.msg %></li> <% }); %>
+            </ul>
+        <% } %>
+
+        <form action="/profile" method="POST">
+            <div class="form-section">
+                <h2>Basic Information</h2>
+                <div>
+                    <label for="fullName">Full Name:</label>
+                    <input type="text" id="fullName" name="fullName" value="<%= locals.profileData && locals.profileData.fullName ? locals.profileData.fullName : (locals.fullName || '') %>" required>
+                </div>
+                <div>
+                    <label for="summary">Summary (Optional, max 1000 characters):</label>
+                    <textarea id="summary" name="summary" rows="4"><%= locals.profileData && locals.profileData.summary ? locals.profileData.summary : (locals.summary || '') %></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Skills & Preferences</h2>
+                <div>
+                    <label for="skills">Skills (Select multiple):</label>
+                    <select id="skills" name="skills" multiple="multiple" class="select2-multiple" style="width: 100%;">
+                        <% skillsList.forEach(function(skill) { %>
+                            <option value="<%= skill.id %>"
+                                <%= (locals.profileData && locals.profileData.skills && locals.profileData.skills.includes(skill.id)) ? 'selected' :
+                                   (locals.skills && Array.isArray(locals.skills) && locals.skills.includes(skill.id)) ? 'selected' : '' %>>
+                                <%= skill.text %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div>
+                    <label for="desiredJobTypes">Desired Job Types (Select multiple):</label>
+                    <select id="desiredJobTypes" name="desiredJobTypes" multiple="multiple" class="select2-multiple" style="width: 100%;">
+                        <% jobTypeList.forEach(function(type) { %>
+                            <option value="<%= type.id %>"
+                                <%= (locals.profileData && locals.profileData.desiredJobTypes && locals.profileData.desiredJobTypes.includes(type.id)) ? 'selected' :
+                                   (locals.desiredJobTypes && Array.isArray(locals.desiredJobTypes) && locals.desiredJobTypes.includes(type.id)) ? 'selected' : '' %>>
+                                <%= type.text %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Category Experience</h2>
+                <div id="categoryExperienceContainer">
+                    <% const experiences = (locals.profileData && locals.profileData.categoryExperience && locals.profileData.categoryExperience.length > 0) ? locals.profileData.categoryExperience : (locals.categoryExperience && locals.categoryExperience.length > 0 ? locals.categoryExperience : [{}]); %>
+                    <% experiences.forEach(function(exp, index) { %>
+                        <div class="dynamic-entry category-experience-entry">
+                            <% if (experiences.length > 1 || (exp.category_id || exp.years)) { %> <%# Show remove button if more than one, or if it has data %>
+                                 <button type="button" class="remove-btn remove-category-exp" title="Remove Experience Category">X</button>
+                            <% } %>
+                            <h4>Experience Category #<%= index + 1 %></h4>
+                            <div>
+                                <label for="category_id_<%= index %>">Category:</label>
+                                <select id="category_id_<%= index %>" name="categoryExperience[<%= index %>][category_id]" class="select2-single category-select" style="width: 100%;">
+                                    <option value="">-- Select Category --</option>
+                                    <% broaderCategoriesList.forEach(function(cat) { %>
+                                        <option value="<%= cat.id %>" <%= (exp && exp.category_id === cat.id) ? 'selected' : '' %>><%= cat.text %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="years_<%= index %>">Years in this category:</label>
+                                <input type="number" id="years_<%= index %>" name="categoryExperience[<%= index %>][years]" min="0" step="1" value="<%= (exp && exp.years !== undefined) ? exp.years : '' %>" placeholder="e.g., 2">
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+                <button type="button" id="addCategoryExperienceBtn" class="add-btn">Add Experience Category</button>
+            </div>
+
+            <div class="form-section">
+                <h2>Education</h2>
+                <div>
+                    <label for="degreeLevel">Highest Degree Level:</label>
+                    <select id="degreeLevel" name="degreeLevel" class="select2-single" style="width: 100%;" required>
+                        <option value="">-- Select Degree --</option>
+                        <% degreeLevelsList.forEach(function(degree) { %>
+                            <option value="<%= degree.id %>"
+                                <%= (locals.profileData && locals.profileData.degreeLevel === degree.id) ? 'selected' :
+                                   (locals.degreeLevel && locals.degreeLevel === degree.id) ? 'selected' : '' %>>
+                                <%= degree.text %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div>
+                    <label for="fieldOfStudy">Field of Study:</label>
+                    <select id="fieldOfStudy" name="fieldOfStudy" class="select2-single" style="width: 100%;" required>
+                        <option value="">-- Select Field of Study --</option>
+                        <% fieldsOfStudyList.forEach(function(field) { %>
+                            <option value="<%= field.id %>"
+                                <%= (locals.profileData && locals.profileData.fieldOfStudy === field.id) ? 'selected' :
+                                   (locals.fieldOfStudy && locals.fieldOfStudy === field.id) ? 'selected' : '' %>>
+                                <%= field.text %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Location Preferences</h2>
+                <div>
+                    <label for="preferredLocations">Preferred Locations (Select multiple, or "Remote"):</label>
+                    <select id="preferredLocations" name="preferredLocations" multiple="multiple" class="select2-multiple" style="width: 100%;">
+                         <% locationsList.forEach(function(location) { %>
+                            <option value="<%= location.id %>"
+                                <%= (locals.profileData && locals.profileData.preferredLocations && locals.profileData.preferredLocations.includes(location.id)) ? 'selected' :
+                                   (locals.preferredLocations && Array.isArray(locals.preferredLocations) && locals.preferredLocations.includes(location.id)) ? 'selected' : '' %>>
+                                <%= location.text %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div>
+                    <input type="checkbox" id="isWillingToRemote" name="isWillingToRemote" value="true"
+                        <%= (locals.profileData && locals.profileData.isWillingToRemote) ? 'checked' :
+                           (locals.isWillingToRemote === 'true') ? 'checked' : '' %>>
+                    <label for="isWillingToRemote" class="checkbox-label">Willing to work remotely</label>
+                </div>
+            </div>
+
+            <button type="submit"><%= isEditMode ? 'Update Profile' : 'Save Profile' %></button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function initializeSelect2(selector) {
+                $(selector).select2({
+                    placeholder: $(selector).find('option[value=""]').text() || "Select an option",
+                    allowClear: true
+                });
+            }
+            $('.select2-multiple').select2({ placeholder: "Select options", allowClear: true });
+            $('.select2-single').each(function() { initializeSelect2(this); });
+
+
+            // Dynamic Category Experience Entries
+            function reindexCategoryExperience() {
+                $('#categoryExperienceContainer .category-experience-entry').each(function(index, entry) {
+                    $(entry).find('h4').text(`Experience Category #${index + 1}`);
+                    $(entry).find('select[name^="categoryExperience"]').attr('name', `categoryExperience[${index}][category_id]`).attr('id', `category_id_${index}`);
+                    $(entry).find('input[name^="categoryExperience"]').attr('name', `categoryExperience[${index}][years]`).attr('id', `years_${index}`);
+                     // Show remove button only if more than one entry or if it's not the only empty one
+                     if ($('#categoryExperienceContainer .category-experience-entry').length > 1) {
+                        $(entry).find('.remove-category-exp').show();
+                    } else {
+                        // If only one, hide remove button if it's empty, show if it has data
+                        const catVal = $(entry).find('select[name$="[category_id]"]').val();
+                        const yearsVal = $(entry).find('input[name$="[years]"]').val();
+                        if (catVal || yearsVal) {
+                            $(entry).find('.remove-category-exp').show();
+                        } else {
+                            $(entry).find('.remove-category-exp').hide();
+                        }
+                    }
+                });
+            }
+
+            $('#addCategoryExperienceBtn').on('click', function() {
+                const container = $('#categoryExperienceContainer');
+                const entryCount = container.find('.category-experience-entry').length;
+                const newEntryHtml = `
+                    <div class="dynamic-entry category-experience-entry">
+                        <button type="button" class="remove-btn remove-category-exp" title="Remove Experience Category">X</button>
+                        <h4>Experience Category #${entryCount + 1}</h4>
+                        <div>
+                            <label for="category_id_${entryCount}">Category:</label>
+                            <select id="category_id_${entryCount}" name="categoryExperience[${entryCount}][category_id]" class="select2-single-new category-select" style="width: 100%;">
+                                <option value="">-- Select Category --</option>
+                                <% broaderCategoriesList.forEach(function(cat) { %>
+                                    <option value="<%= cat.id %>"><%= cat.text %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="years_${entryCount}">Years in this category:</label>
+                            <input type="number" id="years_${entryCount}" name="categoryExperience[${entryCount}][years]" min="0" step="0.5" placeholder="e.g., 3.5">
+                        </div>
+                    </div>`;
+                container.append(newEntryHtml);
+                initializeSelect2(`#category_id_${entryCount}`); // Initialize Select2 for the new select
+                reindexCategoryExperience(); // Re-index and manage remove buttons
+            });
+
+            $('#categoryExperienceContainer').on('click', '.remove-category-exp', function() {
+                $(this).closest('.dynamic-entry').remove();
+                reindexCategoryExperience();
+            });
+            reindexCategoryExperience(); // Initial call to set up remove buttons correctly
+        });
+    </script>
+</body>
+</html>
