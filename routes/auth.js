@@ -4,6 +4,8 @@ const router = express.Router();
 const passport = require('passport');
 const User = require('../models/User'); 
 
+// --- EJS Page Routes ---
+
 // Register Page
 router.get('/register', (req, res) => res.render('auth/register'));
 
@@ -15,7 +17,6 @@ router.post('/register', async (req, res) => {
     const { username, email, password, password2, role } = req.body;
     let errors = [];
 
-    // Basic Validations (you can use express-validator for more robust validation later)
     if (!username || !email || !password || !password2 || !role) {
         errors.push({ msg: 'Please enter all fields' });
     }
@@ -37,8 +38,6 @@ router.post('/register', async (req, res) => {
             } else {
                 const newUser = new User({ username, email, password, role });
                 await newUser.save();
-                // req.flash('success_msg', 'You are now registered and can log in'); // If using connect-flash
-                console.log('User registered:', newUser);
                 res.redirect('/auth/login');
             }
         } catch (err) {
@@ -49,21 +48,19 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Login Handle
+// EJS Login Handle
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', {
-        successRedirect: '/dashboard', // Redirect to a dashboard page (create this later)
+        successRedirect: '/dashboard',
         failureRedirect: '/auth/login',
-        failureFlash: false // Set to true if you use connect-flash for error messages
-        // failureFlash: true // Use with connect-flash: req.flash('error_msg', message)
+        failureFlash: false
     })(req, res, next);
 });
 
-// Logout Handle
+// EJS Logout Handle
 router.get('/logout', (req, res, next) => {
     req.logout(function(err) {
         if (err) { return next(err); }
-        // req.flash('success_msg', 'You are logged out');
         res.redirect('/auth/login');
     });
 });

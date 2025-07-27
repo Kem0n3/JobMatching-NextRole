@@ -6,6 +6,7 @@ const session = require('express-session');
 const passport = require('passport');
 const path = require('path');
 const flash = require('connect-flash');
+const cors = require('cors');
 
 const JobSeekerProfile = require('./models/JobSeekerProfile');
 const Application = require('./models/Application');
@@ -15,12 +16,18 @@ const { calculateOverallMatchScore } = require('./services/matchingService');
 const { addSeekerProfileData, calculateProfileCompletionPercentage } = require('./middleware/profileDataMiddleware');
 const { ensureAuthenticated } = require('./middleware/authMiddleware');
 
+// Route Files
 const authRoutes = require('./routes/auth');
 const seekerProfileRoutes = require('./routes/seekerProfile');
 const jobPostingRoutes = require('./routes/jobPosting');
 const matchesRoutes = require('./routes/matches');
 const applicationRoutes = require('./routes/applicationRoutes');
 const browseRoutes = require('./routes/browseRoutes');
+
+// API Route Files
+const apiAuthRoutes = require('./routes/api/auth');
+const apiJobRoutes = require('./routes/api/jobs');
+const apiDashboardRoutes = require('./routes/api/dashboard');
 
 const {
     skillsList, degreeLevelsList, fieldsOfStudyList,
@@ -30,6 +37,8 @@ const {
 const app = express();
 
 require('./config/passport')(passport);
+
+app.use(cors());
 
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -69,6 +78,12 @@ app.use((req, res, next) => {
     next();
 });
 
+// --- API Routes ---
+app.use('/api/auth', apiAuthRoutes);
+app.use('/api/jobs', apiJobRoutes);
+app.use('/api/dashboard', apiDashboardRoutes);
+
+// --- EJS Page Routes ---
 app.use('/auth', authRoutes);
 app.use('/profile', seekerProfileRoutes);
 app.use('/jobs', jobPostingRoutes);
@@ -92,8 +107,6 @@ app.get('/dashboard', ensureAuthenticated, async (req, res, next) => {
     if (req.user.role === 'seeker') {
         try {
             const seekerProfile = await JobSeekerProfile.findOne({ user_id: req.user.id });
-            // profileCompletion is from res.locals.profileCompletion (set by addSeekerProfileData middleware)
-
             const activeAppsPromise = Application.countDocuments({ seeker_user_id: req.user.id, status: { $nin: ['Hired', 'Rejected', 'Withdrawn'] }});
             const offersHiredAppsPromise = Application.countDocuments({ seeker_user_id: req.user.id, status: { $in: ['Offered', 'Hired'] }});
 
@@ -126,24 +139,24 @@ app.get('/dashboard', ensureAuthenticated, async (req, res, next) => {
 
             const applicationStatusCounts = {};
             const statusOrder = ['Applied', 'Viewed', 'Under Review', 'Interviewing', 'Offered', 'Hired', 'Rejected', 'Withdrawn'];
-            const statusColorsHex = { // Use actual hex codes for Chart.js
-                Applied: '#3F72AF',      // Medium Blue (Accent Interactive)
-                Viewed: '#7FB3D5',       // Lighter, softer blue
-                UnderReview: '#A2D5F2',   // Even lighter blue
-                Interviewing: '#5DADE2',  // A slightly different shade of blue
-                Offered: '#82E0AA',      // A soft, friendly green 
-                Hired: '#2ECC71',        // A clear success green 
-                Rejected: '#F05454',     // Accent Red
-                Withdrawn: '#B0BEC5'      // Neutral Gray for withdrawn
+            const statusColorsHex = {
+                Applied: '#3F72AF',
+                Viewed: '#7FB3D5',
+                UnderReview: '#A2D5F2',
+                Interviewing: '#5DADE2',
+                Offered: '#82E0AA',
+                Hired: '#2ECC71',
+                Rejected: '#F05454',
+                Withdrawn: '#B0BEC5'
             };
 
             statusOrder.forEach(status => {
                 const count = allMyApps.filter(app => app.status === status).length;
-                if (count > 0 || status === 'Applied') { // Show 'Applied' even if 0 for structure
+                if (count > 0 || status === 'Applied') {
                      applicationStatusCounts[status] = {
                         count: count,
                         percentage: allMyApps.length > 0 ? Math.round((count / allMyApps.length) * 100) : 0,
-                        color: statusColorsHex[status] || '#CFD8DC', // Fallback color (light gray)
+                        color: statusColorsHex[status] || '#CFD8DC',
                         label: status
                     };
                 }
