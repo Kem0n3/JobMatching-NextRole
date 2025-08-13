@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --color-bg-page: #F1F6F9; --color-bg-content: #FFFFFF;
+            --color-primary-text: #394867; --color-sidebar-bg: #FFFFFF;
+            --color-sidebar-text: var(--color-primary-text);
+            --color-sidebar-active-text: #14274E; --color-sidebar-active-bg: #DBE2EF;
+            --color-accent-interactive: #3F72AF; --color-accent-action: #F05454;
+            --primary-action-color: var(--color-accent-action); --primary-action-dark: #d94242;
+            --text-color-on-primary: #ffffff; --text-color-base: var(--color-primary-text);
+            --text-color-strong: #14274E; --text-color-subtle: #6c757d;
+            --text-color-inverted: var(--color-primary-text);
+            --text-color-link: var(--color-accent-interactive);
+            --text-color-link-hover: var(--color-accent-action);
+            --background-color-navbar: #FFFFFF; --border-color: #DBE2EF;
+            --border-radius-sm: 6px; --border-radius-md: 10px;
+            --font-family-main: 'Inter', sans-serif;
+            --navbar-height: 65px; --sidebar-width: 270px;
+            --shadow-sm: 0 2px 5px rgba(20, 39, 78, 0.06); --shadow-md: 0 5px 15px rgba(20, 39, 78, 0.08);
+        }
+    </style>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/job-listings.css"> 
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar-area">
+            <%- include('../partials/sidebar') %>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="navbar-area">
+                <%- include('../partials/navbar') %>
+            </header>
+
+            <main class="main-content-area">
+                <div class="page-header">
+                    <h1><%= title %></h1>
+                    <% if (jobs && jobs.length > 0) { %>
+                        <p>Showing your top <%= jobs.length %> matched job opportunities.</p>
+                    <% } %>
+                </div>
+
+                <div class="job-listings-container"> 
+                    <% if (jobs && jobs.length > 0) { %>
+                        <% jobs.forEach(function(job) { %>
+                            <div class="job-card-listing">
+                                <div class="job-card-main-content">
+                                    <div class="job-card-header-listing">
+                                        <div class="job-title-company">
+                                            <h3><a href="/jobs/<%= job._id %>"><%= job.jobTitle %></a></h3>
+                                            <p class="company-name"><%= job.companyName %></p>
+                                        </div>
+                                        <%
+                                            let matchScoreNum = (typeof job.matchScore === 'number') ? job.matchScore : 0;
+                                            let percentage = (matchScoreNum * 100).toFixed(0);
+                                            let matchClass = (percentage >= 50) ? 'high-match' : 'low-match';
+                                        %>
+                                        <div class="match-percentage-circular <%= matchClass %>"
+                                             title="<%= percentage %>% Match">
+                                            <span class="number"><%= percentage %></span><span class="text">%</span>
+                                        </div>
+                                    </div>
+
+                                    <% const locObj = locals.locationsList && locals.locationsList.find(l => l.id === job.jobLocation); %>
+                                    <p class="location-info">
+                                        <svg class="location-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
+                                        <%= locObj ? locObj.text : (job.jobLocation || 'N/A') %>
+                                        <% if (job.allowsRemote) { %>
+                                            <span class="remote-tag">(Remote Option)</span>
+                                        <% } %>
+                                    </p>
+
+                                    <p class="job-description-snippet">
+                                        <%= job.jobDescription.substring(0, 150) %>...
+                                    </p>
+
+                                    <div class="skills-tags-listing">
+                                        <strong>Key Skills:</strong>
+                                        <% if (job.requiredSkills && job.requiredSkills.length > 0) { %>
+                                            <% job.requiredSkills.slice(0, 4).forEach(skillId => { %>
+                                                <% const skillObj = locals.skillsList && locals.skillsList.find(s => s.id === skillId); %>
+                                                <span class="skill-tag"><%= skillObj ? skillObj.text : skillId %></span>
+                                            <% }); %>
+                                            <% if (job.requiredSkills.length > 4) { %> <span class="skill-tag">...</span> <% } %>
+                                        <% } else { %>
+                                            <span>N/A</span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <div class="job-card-footer">
+                                    <a href="/jobs/<%= job._id %>" class="btn-view-details">View Details</a>
+                                    <% if (isAuthenticated && currentUser.role === 'seeker' && job.isActive) { %>
+                                        <% if (typeof job.hasApplied !== 'undefined' && job.hasApplied) { %>
+                                            <button class="btn-applied" disabled>Applied</button>
+                                        <% } else { %>
+                                            <form action="/applications/apply/<%= job._id %>" method="POST" style="display:inline;">
+                                                <button type="submit" class="btn-apply-now">Apply Now</button>
+                                            </form>
+                                        <% } %>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-results-card card"> {/* Added .card for consistent styling */}
+                            <p>No job matches found for you at the moment.</p>
+                            <p>Consider <a href="/profile/form">updating your profile</a> with more details or <a href="/browse/jobs">browsing all jobs</a>.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </main>
+        </div>
+        <script src="/js/main.js"></script>
+    </div>
+</body>
+</html>

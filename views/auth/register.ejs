@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Register</title>
+    </head>
+    <body>
+        <h1>Register</h1>
+        <% if (typeof errors != 'undefined' && errors.length > 0) { %>
+        <ul>
+        <% errors.forEach(function(error) { %>
+        <li><%= error.msg %></li>
+        <% }); %>
+        </ul>
+        <% } %>
+        <form action="/auth/register" method="POST">
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" value="<%= typeof username != 'undefined' ? username : '' %>" required>
+            </div>
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="<%= typeof email != 'undefined' ? email : '' %>" required>
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div>
+                <label for="password2">Confirm Password:</label>
+                <input type="password" id="password2" name="password2" required>
+            </div>
+            <div>
+            <label for="role">Role:</label>
+            <select id="role" name="role" required>
+                <option value="">--Select Role--</option>
+                <option value="seeker" <%= (typeof role != 'undefined' && role === 'seeker') ? 'selected' : '' %>>Job Seeker</option>
+                <option value="recruiter" <%= (typeof role != 'undefined' && role === 'recruiter') ? 'selected' : '' %>>Recruiter</option>
+            </select>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <p>Have an account? <a href="/auth/login">Login</a></p>
+    </body>
+ </html>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title><%= title %></title> <style>body{font-family:sans-serif; margin:20px;}</style></head>
+<body>
+    <%- include('../partials/nav') %>
+    <h1>Recruiter Dashboard</h1>
+    <p>Welcome, <%= currentUser.username %>!</p>
+    <ul>
+        <li><a href="/jobs/new">Post a New Job</a></li>
+        <li><a href="/jobs/my">View My Job Postings</a></li>
+    </ul>
+</body>
+</html>

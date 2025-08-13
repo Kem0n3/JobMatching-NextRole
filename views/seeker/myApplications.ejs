@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
+        .navbar { background-color: #343a40; padding: 10px 20px; margin-bottom: 20px; }
+        .navbar a { color: white; text-decoration: none; margin-right: 15px; }
+        .container { max-width: 900px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .application-item { border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin-bottom: 15px; }
+        .application-item h3 { margin-top: 0; }
+        .application-item h3 a { text-decoration: none; color: #007bff; }
+        .application-item p { margin: 5px 0; color: #555; }
+        .status-Applied { color: #17a2b8; } 
+        .status-Viewed, .status-UnderReview { color: #ffc107; } 
+        .status-Interviewing, .status-Offered { color: #007bff; } 
+        .status-Hired { color: #28a745; } 
+        .status-Rejected, .status-Withdrawn { color: #dc3545; } 
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <%- include('../partials/nav') %>
+    </div>
+    <div class="container">
+        <h1><%= title %></h1>
+
+        <% if (applications && applications.length > 0) { %>
+            <p>You have submitted <%= applications.length %> application(s).</p>
+            <% applications.forEach(function(app) { %>
+                <div class="application-item">
+                    <% if (app.job_id) { %>
+                        <h3><a href="/jobs/<%= app.job_id._id %>"><%= app.job_id.jobTitle %></a></h3>
+                        <p><strong>Company:</strong> <%= app.job_id.companyName %></p>
+                        <% const locObj = locals.locationsList && locationsList.find(l => l.id === app.job_id.jobLocation); %>
+                        <p><strong>Location:</strong> <%= locObj ? locObj.text : app.job_id.jobLocation %></p>
+                    <% } else { %>
+                        <h3>Job details unavailable</h3>
+                    <% } %>
+                    <p><strong>Applied On:</strong> <%= new Date(app.applicationDate).toLocaleDateString() %></p>
+                    <p><strong>Status:</strong> <strong class="status-<%= app.status.replace(/\s+/g, '') %>"><%= app.status %></strong></p>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>You have not applied to any jobs yet.</p>
+            <p><a href="/browse/jobs">Find jobs to apply for!</a></p>
+        <% } %>
+        <br>
+        <a href="/dashboard">« Back to Dashboard</a>
+    </div>
+</body>
+</html>

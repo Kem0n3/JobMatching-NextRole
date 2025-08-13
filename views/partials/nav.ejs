@@ -1,0 +1,24 @@
+<!-- views/partials/nav.ejs -->
+<nav style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+    <a href="/">Home</a> |
+    <% if (isAuthenticated) { %>
+        <a href="/dashboard">Dashboard</a> |
+        <% if (currentUser.role === 'seeker') { %>
+            <a href="/profile/me">My Profile</a> |
+            <a href="/profile/form">Edit Profile</a> |
+            <a href="/browse/jobs">Browse All Jobs</a> |
+            <a href="/matches/jobs">View Matched Jobs</a> |
+            <a href="/applications/my">My Applications</a> |
+        <% } %>
+        <% if (currentUser.role === 'recruiter') { %>
+            <a href="/jobs/new">Post New Job</a> |
+            <a href="/jobs/my">My Jobs</a> |
+            <a href="/browse/seekers">Browse Seekers</a> |
+            
+        <% } %>
+        <a href="/auth/logout">Logout (<%= currentUser.username %>)</a>
+    <% } else { %>
+        <a href="/auth/login">Login</a> |
+        <a href="/auth/register">Register</a>
+    <% } %>
+</nav>  

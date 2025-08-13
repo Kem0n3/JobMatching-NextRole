@@ -1,0 +1,241 @@
+/* public/css/forms.css */
+.form-container {
+    max-width: 800px; 
+    margin: 0; 
+    border: 2px solid salmon;
+}
+
+.form-section {
+    background-color: var(--background-color-content);
+    padding: 25px 30px;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 30px;
+}
+
+.form-section h2 {
+    font-size: 1.3em;
+    color: var(--text-color-strong);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    color: var(--text-color-base);
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: 1em;
+    font-family: var(--font-family-main);
+    color: var(--text-color-dark);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--color-accent-interactive);
+    box-shadow: 0 0 0 3px rgba(63, 114, 175, 0.2); /* Light blue shadow */
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.select2-container {
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+    vertical-align: middle;
+}
+
+
+/* Style for the main selection box (multiple) */
+.select2-container--default .select2-selection--multiple {
+    display: flex;
+    align-items: flex-start; 
+    flex-wrap: wrap; 
+    background-color: white;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-sm) !important;
+    padding: 2px 5px !important; 
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    min-height: 45px !important; 
+    /* height: auto !important;      */
+    /* cursor: text;  */
+}
+
+/* The UL element that holds the tags and the search input */
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Style for each selected item  tag in a MULTIPLE select */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--color-accent-interactive) !important;
+    /* border: 1px solid var(--primary-action-dark) !important; */
+    color: var(--text-color-on-primary) !important;
+    border-radius: var(--border-radius-sm) !important;
+    padding: 5px 10px !important;
+    margin: 4px !important;
+    font-size: 0.85em;
+    cursor: pointer;
+    position: relative;
+    padding-right: 25px !important;
+}
+
+/* Style for the  (X) button on a selected item (invisible overlay) */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    opacity: 0 !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 1px;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    z-index: 1;
+}
+/* Hover effect on the tag to indicate removal */
+.select2-container--default .select2-selection--multiple .select2-selection__choice:hover {
+    background-color: var(--primary-action-dark) !important;
+    /* border-color: var(--primary-action-dark) !important; */
+}
+
+/* Style for the search input field inside the multiple select */
+.select2-container--default .select2-search--inline {
+    flex-grow: 1; 
+}
+.select2-container--default .select2-search--inline .select2-search__field {
+    margin-top: 5px !important;
+    padding: 5px 0 !important; 
+    min-width: 100px; 
+    height: 30px !important; 
+}
+
+/* Style for the dropdown panel */
+.select2-dropdown {
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-md) !important;
+    box-shadow: var(--shadow-md) !important;
+    background-color: white;
+    z-index: 1051;
+}
+
+/* Style for the search box within the dropdown */
+.select2-search--dropdown .select2-search__field {
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-sm) !important;
+}
+
+/* Style for each option in the dropdown */
+.select2-results__option {
+    padding: 8px 12px !important;
+}
+
+/* Style for the highlighted/hovered option */
+.select2-results__option--highlighted {
+    background-color: var(--color-accent-interactive) !important;
+    color: white !important;
+}
+
+/* Style for the selected option */
+.select2-results__option[aria-selected=true] {
+    background-color: var(--color-light-blue) !important;
+    color: var(--color-primary-dark) !important;
+}
+
+/* Focus state for the main selection box */
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: var(--color-accent-interactive) !important;
+    box-shadow: 0 0 0 3px rgba(63, 114, 175, 0.2) !important;
+}
+
+/*  Adjustments for SINGLE select box --- */
+.select2-container--default .select2-selection--single {
+    height: 45px !important;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--text-color-dark) !important;
+    line-height: normal !important; /* Let flexbox handle vertical alignment */
+    padding-left: 12px !important;
+    padding-right: 30px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 43px !important;
+    right: 5px !important;
+}
+
+/* --- CHANGE #2: Style for the "clear all" (x) icon on a SINGLE select --- */
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-left: 10px !important; 
+    color: #aaa;
+    transition: color 0.2s ease;
+}
+.select2-container--default .select2-selection--single .select2-selection__clear:hover {
+    color: var(--color-accent-action); /* Red on hover */
+}
+
+
+.form-submit-button {
+    background-color: var(--primary-action-color);
+    color: var(--text-color-on-primary);
+    border: none;
+    padding: 12px 25px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: 1.05em;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+.form-submit-button:hover {
+    background-color: var(--primary-action-dark);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+}
+.checkbox-group label {
+    margin-bottom: 0;
+    font-weight: normal;
+}

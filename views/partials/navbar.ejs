@@ -1,0 +1,17 @@
+<%# views/partials/navbar.ejs %>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=browse" />
+<header class="navbar-area navbar-container"> 
+    <div class="navbar-left">
+        <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+        <% if (isAuthenticated && locals.displayNameForNav) { %>
+            <span class="navbar-welcome-message">Welcome, <%= locals.displayNameForNav.split(' ')[0] %>!</span>
+        <% } %>
+    </div>
+
+    <div class="navbar-right">
+        <% if (isAuthenticated && locals.displayNameForNav) { %>
+            <img src="/assets/profilepic.png" alt="<%= locals.displayNameForNav %>" class="user-avatar-nav">
+            <span class="username-display-nav"><%= locals.displayNameForNav %></span>
+        <% } %>
+    </div>
+</header>

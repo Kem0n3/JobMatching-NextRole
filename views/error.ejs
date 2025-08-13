@@ -1,0 +1,13 @@
+<!-- views/error.ejs -->
+<!DOCTYPE html>
+<html>
+<head><title><%= title %></title></head>
+<body>
+    <h1><%= title %></h1>
+    <p><%= message %></p>
+    <% if (typeof error !== 'undefined' && error.stack && process.env.NODE_ENV === 'development') { %>
+        <pre><%= error.stack %></pre>
+    <% } %>
+    <a href="/">Go Home</a>
+</body>
+</html>

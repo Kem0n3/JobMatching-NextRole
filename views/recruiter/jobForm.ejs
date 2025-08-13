@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; }
+        label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd;
+            border-radius: 4px; box-sizing: border-box;
+        }
+        .select2-container .select2-selection--multiple { min-height: 40px !important; border: 1px solid #ddd !important; border-radius: 4px !important;}
+        .select2-container--default .select2-selection--single { height: 40px !important; padding: 0; border: 1px solid #ddd !important; border-radius: 4px !important;}
+        .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 38px !important; padding-left: 10px !important;}
+        .select2-container--default .select2-selection--single .select2-selection__arrow { height: 38px !important; }
+
+        button[type="submit"] { background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px; }
+        button[type="submit"]:hover { background-color: #218838; }
+        .error-messages { color: red; list-style-type: none; padding-left: 0; margin-bottom: 15px; }
+        .checkbox-label { display: inline-block !important; margin-left: 5px; font-weight: normal; }
+        .form-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px dashed #ccc; }
+        .form-section:last-child { border-bottom: none; }
+        .dynamic-entry { border: 1px solid #e0e0e0; padding: 15px; margin-bottom: 15px; border-radius: 5px; background-color: #f9f9f9; position:relative; }
+        .remove-btn { position: absolute; top:10px; right:10px; background-color: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .add-btn { background-color: #007bff; color:white; padding: 8px 12px; border:none; border-radius:4px; cursor:pointer; font-size: 14px; margin-top:10px;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <%- include('../partials/nav') %>
+        <h1><%= title %></h1>
+
+        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <ul class="error-messages">
+                <% errors.forEach(function(error) { %> <li><%= error.msg %></li> <% }); %>
+            </ul>
+        <% } %>
+
+        <form action="<%= isEditMode ? '/jobs/' + jobId : '/jobs' %>" method="POST">
+            <div class="form-section">
+                <h2>Job Details</h2>
+                <div>
+                    <label for="jobTitle">Job Title:</label>
+                    <input type="text" id="jobTitle" name="jobTitle" value="<%= locals.jobData && locals.jobData.jobTitle ? locals.jobData.jobTitle : (locals.jobTitle || '') %>" required>
+                </div>
+                <div>
+                    <label for="companyName">Company Name:</label>
+                    <input type="text" id="companyName" name="companyName" value="<%= locals.jobData && locals.jobData.companyName ? locals.jobData.companyName : (locals.companyName || '') %>" required>
+                </div>
+                <div>
+                    <label for="jobDescription">Job Description:</label>
+                    <textarea id="jobDescription" name="jobDescription" rows="8" required><%= locals.jobData && locals.jobData.jobDescription ? locals.jobData.jobDescription : (locals.jobDescription || '') %></textarea>
+                </div>
+                <div>
+                    <label for="jobLocation">Job Location (Primary):</label>
+                    <select id="jobLocation" name="jobLocation" class="select2-single" style="width: 100%;" required>
+                        <option value="">-- Select Location --</option>
+                        <% locationsList.forEach(function(loc) { %>
+                            <option value="<%= loc.id %>" <%= (locals.jobData && locals.jobData.jobLocation === loc.id) ? 'selected' : (locals.jobLocation && locals.jobLocation === loc.id) ? 'selected' : '' %>><%= loc.text %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div> <!-- NEW Checkbox for allowsRemote -->
+                    <input type="checkbox" id="allowsRemote" name="allowsRemote" value="true"
+                        <%= (locals.jobData && locals.jobData.allowsRemote) ? 'checked' :
+                           (locals.allowsRemote === 'true') ? 'checked' : '' %>>
+                    <label for="allowsRemote" class="checkbox-label">This job can be performed remotely</label>
+                </div>
+                <div>
+                    <label for="jobType">Job Type:</label>
+                    <select id="jobType" name="jobType" class="select2-single" style="width: 100%;" required>
+                        <option value="">-- Select Job Type --</option>
+                        <% jobTypeList.forEach(function(type) { %>
+                            <option value="<%= type.id %>" <%= (locals.jobData && locals.jobData.jobType === type.id) ? 'selected' : (locals.jobType && locals.jobType === type.id) ? 'selected' : '' %>><%= type.text %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div>
+                    <label for="careerLevel">Career Level:</label>
+                    <select id="careerLevel" name="careerLevel" class="select2-single" style="width: 100%;" required>
+                        <option value="">-- Select Career Level --</option>
+                        <% careerLevelsList.forEach(function(level) { %>
+                            <option value="<%= level.id %>" <%= (locals.jobData && locals.jobData.careerLevel === level.id) ? 'selected' : (locals.careerLevel && locals.careerLevel === level.id) ? 'selected' : '' %>><%= level.text %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div>
+                    <label for="salaryRange">Salary Range (Optional, e.g., $70k - $90k Annually):</label>
+                    <input type="text" id="salaryRange" name="salaryRange" value="<%= locals.jobData && locals.jobData.salaryRange ? locals.jobData.salaryRange : (locals.salaryRange || '') %>">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Skills & Education</h2>
+                <div>
+                    <label for="requiredSkills">Required Skills (Select multiple):</label>
+                    <select id="requiredSkills" name="requiredSkills" multiple="multiple" class="select2-multiple" style="width: 100%;">
+                        <% skillsList.forEach(function(skill) { %>
+                            <option value="<%= skill.id %>"
+                                <%= (locals.jobData && locals.jobData.requiredSkills && locals.jobData.requiredSkills.includes(skill.id)) ? 'selected' :
+                                   (locals.requiredSkills && Array.isArray(locals.requiredSkills) && locals.requiredSkills.includes(skill.id)) ? 'selected' : '' %>>
+                                <%= skill.text %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div>
+                    <label for="preferredSkills">Preferred Skills (Select multiple, Optional):</label>
+                    <select id="preferredSkills" name="preferredSkills" multiple="multiple" class="select2-multiple" style="width: 100%;">
+                        <% skillsList.forEach(function(skill) { %>
+                            <option value="<%= skill.id %>"
+                                <%= (locals.jobData && locals.jobData.preferredSkills && locals.jobData.preferredSkills.includes(skill.id)) ? 'selected' :
+                                   (locals.preferredSkills && Array.isArray(locals.preferredSkills) && locals.preferredSkills.includes(skill.id)) ? 'selected' : '' %>>
+                                <%= skill.text %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div>
+                    <label for="minimumDegreeLevel">Minimum Degree Level Required:</label>
+                    <select id="minimumDegreeLevel" name="minimumDegreeLevel" class="select2-single" style="width: 100%;" required>
+                        <option value="">-- Select Minimum Degree --</option>
+                        <% degreeLevelsList.forEach(function(degree) { %>
+                            <option value="<%= degree.id %>"
+                                <%= (locals.jobData && locals.jobData.minimumDegreeLevel === degree.id) ? 'selected' :
+                                   (locals.minimumDegreeLevel && locals.minimumDegreeLevel === degree.id) ? 'selected' : '' %>>
+                                <%= degree.text %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div>
+                    <label for="preferredFieldOfStudy">Preferred Field of Study (Optional):</label>
+                    <select id="preferredFieldOfStudy" name="preferredFieldOfStudy" class="select2-single" style="width: 100%;">
+                        <option value="">-- Select Preferred Field (Optional) --</option>
+                        <% fieldsOfStudyList.forEach(function(field) { %>
+                            <option value="<%= field.id %>"
+                                <%= (locals.jobData && locals.jobData.preferredFieldOfStudy === field.id) ? 'selected' :
+                                   (locals.preferredFieldOfStudy && locals.preferredFieldOfStudy === field.id) ? 'selected' : '' %>>
+                                <%= field.text %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Category Experience Requirements</h2>
+                <div id="experienceRequirementsContainer">
+                    <% const experiences = (locals.jobData && locals.jobData.experienceRequirements && locals.jobData.experienceRequirements.length > 0) ? locals.jobData.experienceRequirements : (locals.experienceRequirements && locals.experienceRequirements.length > 0 ? locals.experienceRequirements : [{}]); %>
+                    <% experiences.forEach(function(exp, index) { %>
+                        <div class="dynamic-entry experience-requirement-entry">
+                            <% if (experiences.length > 1 || (exp.category_id || exp.minYears)) { %>
+                                <button type="button" class="remove-btn remove-exp-req" title="Remove Requirement">X</button>
+                            <% } %>
+                            <h4>Experience Requirement #<%= index + 1 %></h4>
+                            <div>
+                                <label for="exp_req_category_<%= index %>">Category:</label>
+                                <select id="exp_req_category_<%= index %>" name="experienceRequirements[<%= index %>][category_id]" class="select2-single category-select" style="width: 100%;">
+                                    <option value="">-- Select Category --</option>
+                                    <% broaderCategoriesList.forEach(function(cat) { %>
+                                        <option value="<%= cat.id %>" <%= (exp && exp.category_id === cat.id) ? 'selected' : '' %>><%= cat.text %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="exp_req_minYears_<%= index %>">Minimum Years in this category:</label>
+                                <input type="number" id="exp_req_minYears_<%= index %>" name="experienceRequirements[<%= index %>][minYears]" min="0" step="0.5" value="<%= (exp && exp.minYears !== undefined) ? exp.minYears : '' %>" placeholder="e.g., 2">
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+                <button type="button" id="addExperienceRequirementBtn" class="add-btn">Add Experience Requirement</button>
+            </div>
+
+            <% if (isEditMode) { %>
+                <div class="form-section">
+                    <h2>Status</h2>
+                    <div>
+                        <input type="checkbox" id="isActive" name="isActive" value="true" <%= (locals.jobData && locals.jobData.isActive) ? 'checked' : (locals.isActive === 'true') ? 'checked' : (!locals.jobData && !isEditMode) ? 'checked' : '' %>> <!-- Default active for new, maintain for edit -->
+                        <label for="isActive" class="checkbox-label">Job Posting is Active</label>
+                    </div>
+                </div>
+            <% } %>
+
+            <button type="submit"><%= isEditMode ? 'Update Job Posting' : 'Post Job' %></button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function initializeSelect2(selector) {
+                $(selector).select2({
+                    placeholder: $(selector).find('option[value=""]').text() || "Select an option",
+                    allowClear: true
+                });
+            }
+            $('.select2-multiple').select2({ placeholder: "Select options", allowClear: true });
+            $('.select2-single').each(function() { initializeSelect2(this); });
+
+
+            function reindexExperienceRequirements() {
+                $('#experienceRequirementsContainer .experience-requirement-entry').each(function(index, entry) {
+                    $(entry).find('h4').text(`Experience Requirement #${index + 1}`);
+                    $(entry).find('select[name^="experienceRequirements"]').attr('name', `experienceRequirements[${index}][category_id]`).attr('id', `exp_req_category_${index}`);
+                    $(entry).find('input[name^="experienceRequirements"]').attr('name', `experienceRequirements[${index}][minYears]`).attr('id', `exp_req_minYears_${index}`);
+                    if ($('#experienceRequirementsContainer .experience-requirement-entry').length > 1) {
+                        $(entry).find('.remove-exp-req').show();
+                    } else {
+                        const catVal = $(entry).find('select[name$="[category_id]"]').val();
+                        const yearsVal = $(entry).find('input[name$="[minYears]"]').val();
+                        if (catVal || yearsVal) { $(entry).find('.remove-exp-req').show(); }
+                        else { $(entry).find('.remove-exp-req').hide(); }
+                    }
+                });
+            }
+
+            $('#addExperienceRequirementBtn').on('click', function() {
+                const container = $('#experienceRequirementsContainer');
+                const entryCount = container.find('.experience-requirement-entry').length;
+                const newEntryHtml = `
+                    <div class="dynamic-entry experience-requirement-entry">
+                        <button type="button" class="remove-btn remove-exp-req" title="Remove Requirement">X</button>
+                        <h4>Experience Requirement #${entryCount + 1}</h4>
+                        <div>
+                            <label for="exp_req_category_${entryCount}">Category:</label>
+                            <select id="exp_req_category_${entryCount}" name="experienceRequirements[${entryCount}][category_id]" class="select2-single-new category-select" style="width: 100%;">
+                                <option value="">-- Select Category --</option>
+                                <% broaderCategoriesList.forEach(function(cat) { %>
+                                    <option value="<%= cat.id %>"><%= cat.text %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="exp_req_minYears_${entryCount}">Minimum Years in this category:</label>
+                            <input type="number" id="exp_req_minYears_${entryCount}" name="experienceRequirements[${entryCount}][minYears]" min="0" step="0.5" placeholder="e.g., 2">
+                        </div>
+                    </div>`;
+                container.append(newEntryHtml);
+                initializeSelect2(`#exp_req_category_${entryCount}`);
+                reindexExperienceRequirements();
+            });
+
+            $('#experienceRequirementsContainer').on('click', '.remove-exp-req', function() {
+                $(this).closest('.dynamic-entry').remove();
+                reindexExperienceRequirements();
+            });
+            reindexExperienceRequirements(); // Initial call
+        });
+    </script>
+</body>
+</html>

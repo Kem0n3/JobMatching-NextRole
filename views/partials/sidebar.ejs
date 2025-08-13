@@ -1,0 +1,42 @@
+<%# views/partials/sidebar.ejs %>
+<aside class="sidebar-area sidebar-container">
+    <div class="sidebar-logo-area">
+        <a href="/" class="sidebar-logo-link">NextRole</a>
+    </div>
+
+    <nav class="sidebar-navigation">
+        <ul class="sidebar-nav-list">
+            <% if (isAuthenticated && currentUser.role === 'seeker') { %>
+                <li class="<%= (locals.activeNavItem === 'dashboard') ? 'active' : '' %>">
+                    <a href="/dashboard">Dashboard</a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'profileSetup') ? 'active' : '' %>">
+                    <a href="/profile/form">Profile Setup</a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'viewProfile') ? 'active' : '' %>"> 
+                    <a href="/profile/me">View My Profile</a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'browseJobs') ? 'active' : '' %>">
+                    <a href="/browse/jobs">Browse Jobs</a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'matchedJobs') ? 'active' : '' %>">
+                    <a href="/matches/jobs">Matched Jobs</a>
+                </li>
+                <li class="<%= (locals.activeNavItem === 'myApplications') ? 'active' : '' %>">
+                    <a href="/applications/my">My Applications</a>
+                </li>
+            <% } else if (isAuthenticated && currentUser.role === 'recruiter') { %>
+                <li class="<%= (locals.activeNavItem === 'dashboard') ? 'active' : '' %>"><a href="/dashboard">Dashboard</a></li>
+                <li class="<%= (locals.activeNavItem === 'postJob') ? 'active' : '' %>"><a href="/jobs/new">Post New Job</a></li>
+                <li class="<%= (locals.activeNavItem === 'myJobs') ? 'active' : '' %>"><a href="/jobs/my">My Jobs</a></li>
+                <li class="<%= (locals.activeNavItem === 'browseSeekers') ? 'active' : '' %>"><a href="/browse/seekers">Browse Seekers</a></li>
+            <% } %>
+        </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+        <% if (isAuthenticated) { %>
+            <a href="/auth/logout" class="logout-button">Logout</a>
+        <% } %>
+    </div>
+</aside>

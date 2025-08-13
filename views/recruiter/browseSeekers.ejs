@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style> /* Similar styling to browseJobs.ejs */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .navbar { background-color: #343a40; padding: 10px 20px; margin-bottom: 20px; }
+        .navbar a { color: white; text-decoration: none; margin-right: 15px; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 20px; }
+        .filter-form-container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; }
+        .filter-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .filter-group select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .select2-container { width: 100% !important; }
+        .filter-buttons { margin-top: 20px; }
+        .filter-buttons button, .filter-buttons a { padding: 10px 15px; margin-right: 10px; border-radius: 4px; text-decoration:none; display:inline-block; }
+        .seeker-card { background-color: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin-bottom: 15px; }
+        .seeker-card h3 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <%- include('../partials/nav') %>
+    </div>
+    <div class="container">
+        <h1><%= title %></h1>
+
+        <div class="filter-form-container">
+            <h2>Filter Seekers</h2>
+            <form method="GET" action="/browse/seekers"> 
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label for="skills">Skills (Seeker must have all selected):</label>
+                        <select id="skills" name="skills" multiple="multiple" class="select2-multiple">
+                            <% if (typeof skillsList !== 'undefined') { %>
+                                <% skillsList.forEach(function(skill) { %>
+                                    <option value="<%= skill.id %>"
+                                        <%= (currentFilters.skills && ( (Array.isArray(currentFilters.skills) && currentFilters.skills.includes(skill.id)) || currentFilters.skills === skill.id ) ) ? 'selected' : '' %>>
+                                        <%= skill.text %>
+                                    </option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="degreeLevel">Degree Level:</label>
+                        <select id="degreeLevel" name="degreeLevel" class="select2-single">
+                            <option value="">All Degrees</option>
+                            <% if (typeof degreeLevelsList !== 'undefined') { %>
+                                <% degreeLevelsList.forEach(function(degree) { %>
+                                    <option value="<%= degree.id %>" <%= (currentFilters.degreeLevel === degree.id) ? 'selected' : '' %>><%= degree.text %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="fieldOfStudy">Field of Study:</label>
+                        <select id="fieldOfStudy" name="fieldOfStudy" class="select2-single">
+                            <option value="">All Fields</option>
+                            <% if (typeof fieldsOfStudyList !== 'undefined') { %>
+                                <% fieldsOfStudyList.forEach(function(field) { %>
+                                    <option value="<%= field.id %>" <%= (currentFilters.fieldOfStudy === field.id) ? 'selected' : '' %>><%= field.text %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <%# Add more filters here if you expand: preferredLocations, desiredJobTypes, categoryExperience %>
+                </div>
+                <div class="filter-buttons">
+                    <button type="submit" class="apply" style="background-color:#007bff; color:white; border:none;">Apply Filters</button>
+                    <a href="/browse/seekers" class="clear" style="background-color:#6c757d; color:white;">Clear Filters</a> 
+                </div>
+            </form>
+        </div>
+
+        <% if (seekers && seekers.length > 0) { %>
+            <p>Showing <%= seekers.length %> seeker(s).</p>
+            <% seekers.forEach(function(seeker) { %>
+                <div class="seeker-card">
+                    <h3><%= seeker.fullName %> <% if (seeker.user && seeker.user.email) { %> (<%= seeker.user.email %>) <% } %></h3>
+                    <% const degree = locals.degreeLevelsList && degreeLevelsList.find(d => d.id === seeker.degreeLevel); %>
+                    <% const field = locals.fieldsOfStudyList && fieldsOfStudyList.find(f => f.id === seeker.fieldOfStudy); %>
+                    <p>
+                        <strong>Education:</strong> <%= degree ? degree.text : (seeker.degreeLevel || 'N/A') %>
+                        <% if (field) { %> - <%= field.text %><% } else if (seeker.fieldOfStudy) { %> - <%= seeker.fieldOfStudy %><% } %>
+                    </p>
+                    <% if (seeker.skills && seeker.skills.length > 0) { %>
+                        <p><strong>Skills:</strong>
+                        <% seeker.skills.slice(0,5).forEach((skillId, index) => { %>
+                            <% const skillObj = locals.skillsList && skillsList.find(s => s.id === skillId); %>
+                            <%= skillObj ? skillObj.text : skillId %><%= index < Math.min(4, seeker.skills.length -1) ? ', ' : '' %>
+                        <% }); %><%= seeker.skills.length > 5 ? '...' : '' %>
+                        </p>
+                    <% } %>
+                    <% if (seeker.categoryExperience && seeker.categoryExperience.length > 0) { %>
+                        <p><strong>Category Experience:</strong>
+                        <% seeker.categoryExperience.forEach((exp, index) => { %>
+                            <% const catObj = locals.broaderCategoriesList && broaderCategoriesList.find(c => c.id === exp.category_id); %>
+                            <%= catObj ? catObj.text : exp.category_id %> (<%= exp.years %> yrs)<%= index < seeker.categoryExperience.length - 1 ? '; ' : '' %>
+                        <% }); %>
+                        </p>
+                    <% } %>
+                    <p><small>(Full profile view / Contact - TBD)</small></p>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="no-jobs">
+                <p>No seekers found matching your criteria.</p>
+            </div>
+        <% } %>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2-single').each(function() {
+                $(this).select2({
+                    placeholder: $(this).find('option[value=""]').text() || "Select an option",
+                    allowClear: true,
+                    width: 'resolve'
+                });
+            });
+            $('.select2-multiple').select2({
+                placeholder: "Select skills",
+                allowClear: true,
+                width: 'resolve'
+            });
+        });
+    </script>
+</body>
+</html>
