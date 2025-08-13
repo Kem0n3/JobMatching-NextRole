@@ -1,6 +1,4 @@
 // routes/browseRoutes.js
-console.log("--- browseRoutes.js file is being loaded ---");
-
 const express = require('express');
 const router = express.Router();
 
@@ -12,10 +10,8 @@ const {
     degreeLevelsList, fieldsOfStudyList, broaderCategoriesList
 } = require('../config/selectData');
 
-// --- Route for Job Seekers to Browse/Filter Jobs ---
-// /browse/jobs
 router.get('/jobs', ensureAuthenticated, async (req, res, next) => {
-    console.log("HIT: GET /browse/jobs - Query params:", req.query);
+    console.log("GET /browse/jobs - Query params:", req.query);
     try {
         const {
             jobLocation, jobType, careerLevel, skills
@@ -23,9 +19,15 @@ router.get('/jobs', ensureAuthenticated, async (req, res, next) => {
 
         let filterQuery = { isActive: true };
 
-        if (jobLocation && jobLocation !== '') filterQuery.jobLocation = jobLocation;
-        if (jobType && jobType !== '') filterQuery.jobType = jobType;
-        if (careerLevel && careerLevel !== '') filterQuery.careerLevel = careerLevel;
+        if (jobLocation && jobLocation !== '') {
+            filterQuery.jobLocation = jobLocation;
+        }
+        if (jobType && jobType !== '') {
+            filterQuery.jobType = jobType;
+        }
+        if (careerLevel && careerLevel !== '') {
+            filterQuery.careerLevel = careerLevel;
+        }
 
         if (skills) {
             const skillsToFilter = Array.isArray(skills) ? skills : [skills];
@@ -38,16 +40,21 @@ router.get('/jobs', ensureAuthenticated, async (req, res, next) => {
         console.log("Constructed filter query for /browse/jobs:", filterQuery);
         const jobs = await JobPosting.find(filterQuery)
             .sort({ postedDate: -1 })
-            .populate('recruiter_id', 'companyName username'); 
+            .populate('recruiter_id', 'companyName username');
 
         console.log(`Found ${jobs.length} jobs after filtering for /browse/jobs.`);
-        res.render('job/browseJobs', { // Path to EJS: views/job/browseJobs.ejs
+        res.render('job/browseJobs', {
             title: 'Browse Jobs',
+            activeNavItem: 'browseJobs',
             jobs: jobs.map(job => job.toObject()),
             currentFilters: req.query,
-        
-            locationsList, jobTypeList, careerLevelsList, skillsList,
-            degreeLevelsList, fieldsOfStudyList, broaderCategoriesList
+            locationsList,
+            jobTypeList,
+            careerLevelsList,
+            skillsList,
+            degreeLevelsList,
+            fieldsOfStudyList,
+            broaderCategoriesList
         });
     } catch (err) {
         console.error("Error in GET /browse/jobs:", err);
@@ -55,16 +62,13 @@ router.get('/jobs', ensureAuthenticated, async (req, res, next) => {
     }
 });
 
-// ---  Route for Recruiters to Browse/Filter Seekers ---
-// Accessible at /browse/seekers
 router.get('/seekers', ensureAuthenticated, ensureRecruiter, async (req, res, next) => {
-    console.log("HIT: GET /browse/seekers - Query params:", req.query);
+    console.log("GET /browse/seekers - Query params:", req.query);
     try {
         const {
-            skills: seekerSkills, 
+            skills: seekerSkills,
             degreeLevel,
             fieldOfStudy
-       
         } = req.query;
 
         let filterQuery = {};
@@ -76,8 +80,12 @@ router.get('/seekers', ensureAuthenticated, ensureRecruiter, async (req, res, ne
                 filterQuery.skills = { $all: validSkills };
             }
         }
-        if (degreeLevel && degreeLevel !== '') filterQuery.degreeLevel = degreeLevel;
-        if (fieldOfStudy && fieldOfStudy !== '') filterQuery.fieldOfStudy = fieldOfStudy;
+        if (degreeLevel && degreeLevel !== '') {
+            filterQuery.degreeLevel = degreeLevel;
+        }
+        if (fieldOfStudy && fieldOfStudy !== '') {
+            filterQuery.fieldOfStudy = fieldOfStudy;
+        }
 
         console.log("Constructed filter query for /browse/seekers:", filterQuery);
         const seekers = await JobSeekerProfile.find(filterQuery)
@@ -85,13 +93,17 @@ router.get('/seekers', ensureAuthenticated, ensureRecruiter, async (req, res, ne
             .limit(50);
 
         console.log(`Found ${seekers.length} seekers after filtering for /browse/seekers.`);
-        res.render('recruiter/browseSeekers', { // Path to EJS: views/recruiter/browseSeekers.ejs
+        res.render('recruiter/browseSeekers', {
             title: 'Browse Job Seekers',
+            activeNavItem: 'browseSeekers',
             seekers: seekers.map(s => s.toObject()),
             currentFilters: req.query,
-            // Pass lists needed for filters and displaying seeker card details
-            skillsList, degreeLevelsList, fieldsOfStudyList,
-            broaderCategoriesList, locationsList, jobTypeList 
+            skillsList,
+            degreeLevelsList,
+            fieldsOfStudyList,
+            broaderCategoriesList,
+            locationsList,
+            jobTypeList
         });
     } catch (err) {
         console.error("Error in GET /browse/seekers:", err);

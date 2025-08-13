@@ -16,7 +16,64 @@
     margin-top: 0;
 }
 
+.filter-form-container {
+    margin-bottom: 30px;
+}
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 2fr));
+    gap: 20px;
+    align-items: end;
+}
+.select2-container {
+    width: 90% !important; 
+}
 
+.filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.9em;
+}
+.filter-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+.btn-apply-filters, .btn-clear-filters {
+    padding: 10px 20px;
+    border-radius: var(--border-radius-sm);
+    text-decoration: none;
+    font-size: 0.95em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.btn-apply-filters {
+    background-color: var(--primary-action-color);
+    color: var(--text-color-on-primary);
+    border-color: var(--primary-action-color);
+}
+.btn-apply-filters:hover {
+    background-color: var(--primary-action-dark);
+    border-color: var(--primary-action-dark);
+}
+.btn-clear-filters {
+    background-color: transparent;
+    color: var(--text-color-subtle);
+    border-color: var(--border-color);
+}
+.btn-clear-filters:hover {
+    background-color: var(--color-bg-page);
+    border-color: var(--text-color-subtle);
+}
+
+.results-count {
+    font-size: 0.9em;
+    color: var(--text-color-subtle);
+    margin-bottom: 15px;
+}
 
 .job-card-listing {
     background-color: var(--background-color-content);
@@ -26,7 +83,7 @@
     margin-bottom: 20px;
     box-shadow: var(--shadow-sm);
     display: flex;
-    flex-direction: column; /* Stack content and footer */
+    flex-direction: column;
     transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 .job-card-listing:hover {
@@ -35,13 +92,13 @@
 }
 
 .job-card-main-content {
-    flex-grow: 1; /* Allow this section to push footer down */
+    flex-grow: 1;
 }
 
 .job-card-header-listing {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Align items to top */
+    align-items: flex-start;
     margin-bottom: 10px;
 }
 
@@ -61,37 +118,6 @@
     color: var(--text-color-subtle);
 }
 
-.match-percentage-circular { /* Copied from dashboard.css, ensure consistency or move to global */
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    color: var(--text-color-strong);
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    justify-content: center;
-    font-weight: 600;
-    border-width: 3px;
-    border-style: solid;
-    line-height: 1;
-    padding-top: 2px;
-    flex-shrink: 0;
-    font-size: 1.1em;
-    border-color: var(--color-accent-action);
-}
-
-.match-percentage-circular.high-match {
-    border-color: var(--color-accent-interactive); 
-}
-
-.match-percentage-circular.low-match {
-    border-color: var(--color-accent-action); 
-}
-
-.match-percentage-circular .number { font-size: 1.3em; }
-.match-percentage-circular .text { font-size: 0.8em; margin-left: 1px; }
-
-
 .location-info {
     font-size: 0.9em;
     color: var(--text-color-subtle);
@@ -101,7 +127,7 @@
 }
 .location-icon {
     width: 16px; height: 16px; margin-right: 6px;
-    fill: var(--text-color-subtle); 
+    fill: var(--text-color-subtle);
 }
 .remote-tag {
     font-size: 0.8em;
@@ -115,9 +141,6 @@
     color: var(--text-color-base);
     line-height: 1.5;
     margin-bottom: 15px;
-    /* max-height: 4.5em; 
-    /* overflow: hidden; */
-    /* text-overflow: ellipsis; */ 
 }
 
 .skills-tags-listing {
@@ -129,7 +152,7 @@
     margin-right: 5px;
     font-weight: 500;
 }
-.skill-tag { 
+.skill-tag {
     background-color: var(--color-bg-page);
     color: var(--color-primary-text);
     font-size: 0.8em;
@@ -147,9 +170,9 @@
     padding-top: 15px;
     border-top: 1px solid var(--border-color);
     display: flex;
-    justify-content: flex-end; 
+    justify-content: flex-end;
     align-items: center;
-    gap: 10px; 
+    gap: 10px;
 }
 
 .btn-view-details, .btn-apply-now, .btn-applied {
@@ -174,7 +197,7 @@
 }
 
 .btn-apply-now {
-    background-color: var(--primary-action-color); /* Red */
+    background-color: var(--primary-action-color);
     color: var(--text-color-on-primary);
 }
 .btn-apply-now:hover {
@@ -182,7 +205,7 @@
 }
 
 .btn-applied {
-    background-color: #A0AEC0; /* Neutral Gray */
+    background-color: #A0AEC0;
     color: var(--color-bg-content);
     border-color: #A0AEC0;
     cursor: default;
@@ -191,4 +214,6 @@
 .no-results-card {
     text-align: center;
     color: var(--text-color-subtle);
+    border: 1px dashed var(--border-color);
+    box-shadow: none;
 }

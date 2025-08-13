@@ -2,52 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
-        .navbar { background-color: #343a40; padding: 10px 20px; margin-bottom: 20px; }
-        .navbar a { color: white; text-decoration: none; margin-right: 15px; }
-        .container { max-width: 900px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .application-item { border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin-bottom: 15px; }
-        .application-item h3 { margin-top: 0; }
-        .application-item h3 a { text-decoration: none; color: #007bff; }
-        .application-item p { margin: 5px 0; color: #555; }
-        .status-Applied { color: #17a2b8; } 
-        .status-Viewed, .status-UnderReview { color: #ffc107; } 
-        .status-Interviewing, .status-Offered { color: #007bff; } 
-        .status-Hired { color: #28a745; } 
-        .status-Rejected, .status-Withdrawn { color: #dc3545; } 
+        :root {
+            --color-bg-page: #F1F6F9; --color-bg-content: #FFFFFF;
+            --color-primary-text: #394867; --color-sidebar-bg: #FFFFFF;
+            --color-sidebar-text: var(--color-primary-text);
+            --color-sidebar-active-text: #14274E; --color-sidebar-active-bg: #DBE2EF;
+            --color-accent-interactive: #3F72AF; --color-accent-action: #F05454;
+            --primary-action-color: var(--color-accent-action); --primary-action-dark: #d94242;
+            --text-color-on-primary: #ffffff; --text-color-base: var(--color-primary-text);
+            --text-color-strong: #14274E; --text-color-subtle: #6c757d;
+            --text-color-inverted: var(--color-primary-text);
+            --text-color-link: var(--color-accent-interactive);
+            --text-color-link-hover: var(--color-accent-action);
+            --background-color-navbar: #FFFFFF; --border-color: #DBE2EF;
+            --border-radius-sm: 6px; --border-radius-md: 10px;
+            --font-family-main: 'Inter', sans-serif;
+            --navbar-height: 65px; --sidebar-width: 270px;
+            --shadow-sm: 0 2px 5px rgba(20, 39, 78, 0.06); --shadow-md: 0 5px 15px rgba(20, 39, 78, 0.08);
+        }
     </style>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/applications.css"> 
 </head>
 <body>
-    <div class="navbar">
-        <%- include('../partials/nav') %>
-    </div>
-    <div class="container">
-        <h1><%= title %></h1>
+    <div class="app-shell">
+        <aside class="sidebar-area">
+            <%- include('../partials/sidebar') %>
+        </aside>
 
-        <% if (applications && applications.length > 0) { %>
-            <p>You have submitted <%= applications.length %> application(s).</p>
-            <% applications.forEach(function(app) { %>
-                <div class="application-item">
-                    <% if (app.job_id) { %>
-                        <h3><a href="/jobs/<%= app.job_id._id %>"><%= app.job_id.jobTitle %></a></h3>
-                        <p><strong>Company:</strong> <%= app.job_id.companyName %></p>
-                        <% const locObj = locals.locationsList && locationsList.find(l => l.id === app.job_id.jobLocation); %>
-                        <p><strong>Location:</strong> <%= locObj ? locObj.text : app.job_id.jobLocation %></p>
-                    <% } else { %>
-                        <h3>Job details unavailable</h3>
-                    <% } %>
-                    <p><strong>Applied On:</strong> <%= new Date(app.applicationDate).toLocaleDateString() %></p>
-                    <p><strong>Status:</strong> <strong class="status-<%= app.status.replace(/\s+/g, '') %>"><%= app.status %></strong></p>
+        <div class="main-wrapper">
+            <header class="navbar-area">
+                <%- include('../partials/navbar') %>
+            </header>
+
+            <main class="main-content-area">
+                <div class="page-header">
+                    <h1><%= title %></h1>
+                    <p>Track the status of all the jobs you've applied for.</p>
                 </div>
-            <% }); %>
-        <% } else { %>
-            <p>You have not applied to any jobs yet.</p>
-            <p><a href="/browse/jobs">Find jobs to apply for!</a></p>
-        <% } %>
-        <br>
-        <a href="/dashboard">« Back to Dashboard</a>
+
+                <div class="applications-container">
+                    <% if (applications && applications.length > 0) { %>
+                        <% applications.forEach(function(app) { %>
+                            <div class="application-card">
+                                <div class="application-card-main">
+                                    <% if (app.job_id) { %>
+                                        <div class="company-logo-placeholder">
+                                            <%= app.job_id.companyName ? app.job_id.companyName.charAt(0).toUpperCase() : 'C' %>
+                                        </div>
+                                        <div class="application-info">
+                                            <h3><a href="/jobs/<%= app.job_id._id %>"><%= app.job_id.jobTitle %></a></h3>
+                                            <p class="company-name"><%= app.job_id.companyName %></p>
+                                            <% const locObj = locals.locationsList && locals.locationsList.find(l => l.id === app.job_id.jobLocation); %>
+                                            <p class="location-info">
+                                                <svg class="location-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
+                                                <%= locObj ? locObj.text : (app.job_id.jobLocation || 'N/A') %>
+                                            </p>
+                                        </div>
+                                    <% } else { %>
+                                        <div class="application-info">
+                                            <h3>Job details unavailable</h3>
+                                            <p class="company-name">This job posting may have been removed.</p>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="application-card-status">
+                                    <p class="status-label">Status</p>
+                                    <span class="status-tag status-<%= app.status ? app.status.replace(/\s+/g, '').toLowerCase() : 'unknown' %>">
+                                        <%= app.status || 'Unknown' %>
+                                    </span>
+                                    <p class="application-date">
+                                        Applied: <%= new Date(app.applicationDate).toLocaleDateString() %>
+                                    </p>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-results-card card">
+                            <h2>No Applications Yet</h2>
+                            <p>You haven't applied to any jobs. Start by finding a role that interests you!</p>
+                            <a href="/browse/jobs" class="btn-browse-jobs">Browse Jobs</a>
+                        </div>
+                    <% } %>
+                </div>
+            </main>
+        </div>
+        <script src="/js/main.js"></script>
     </div>
 </body>
 </html>

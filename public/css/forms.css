@@ -68,6 +68,7 @@
     margin: 0;
     position: relative;
     vertical-align: middle;
+    width: 100%
 }
 
 
@@ -132,15 +133,15 @@
 }
 
 /* Style for the search input field inside the multiple select */
-.select2-container--default .select2-search--inline {
+/* .select2-container--default .select2-search--inline {
     flex-grow: 1; 
-}
-.select2-container--default .select2-search--inline .select2-search__field {
+} */
+/* .select2-container--default .select2-search--inline .select2-search__field {
     margin-top: 5px !important;
     padding: 5px 0 !important; 
     min-width: 100px; 
     height: 30px !important; 
-}
+} */
 
 /* Style for the dropdown panel */
 .select2-dropdown {

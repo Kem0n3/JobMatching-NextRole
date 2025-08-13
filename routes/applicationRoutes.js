@@ -148,26 +148,21 @@ router.post('/status/:applicationId', ensureAuthenticated, ensureRecruiter, asyn
 });
 
 
-// --- Seeker: View My Applications ---
 router.get('/my', ensureAuthenticated, ensureSeeker, async (req, res, next) => {
     console.log(`GET /applications/my - Seeker ${req.user.id} viewing their applications`);
     try {
         const myApplications = await Application.find({ seeker_user_id: req.user.id })
             .populate({
                 path: 'job_id',
-                select: 'jobTitle companyName jobLocation', 
-                populate: { 
-                    path: 'recruiter_id',
-                    select: 'username'
-                }
+                select: 'jobTitle companyName jobLocation' 
             })
             .sort({ applicationDate: -1 });
 
-        res.render('seeker/myApplications', { 
+        res.render('seeker/myApplications', {
             title: 'My Applications',
+            activeNavItem: 'myApplications', 
             applications: myApplications.map(app => app.toObject()),
-            // Pass selectData lists if needed for displaying jobLocation text, etc.
-            locationsList: require('../config/selectData').locationsList
+            locationsList: require('../config/selectData').locationsList 
         });
     } catch (err) {
         console.error("Error fetching seeker's applications:", err);
