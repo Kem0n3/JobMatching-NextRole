@@ -1,0 +1,194 @@
+/* public/css/job-details.css */
+
+.job-details-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.job-details-header {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding: 25px 30px;
+}
+
+.company-logo-placeholder {
+    width: 70px;
+    height: 70px;
+    background-color: var(--color-bg-page);
+    color: var(--color-primary-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    font-size: 2.5em;
+    flex-shrink: 0;
+}
+
+.header-info {
+    flex-grow: 1;
+}
+.header-info h1 {
+    font-size: 2em;
+    margin-bottom: 2px;
+    color: var(--text-color-strong);
+}
+.header-info .company-name {
+    font-size: 1.1em;
+    color: var(--text-color-subtle);
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+.meta-info {
+    display: flex;
+    gap: 20px;
+    font-size: 0.9em;
+    color: var(--text-color-subtle);
+}
+.meta-info span {
+    display: flex;
+    align-items: center;
+}
+.meta-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    fill: var(--text-color-subtle);
+}
+
+.header-actions {
+    flex-shrink: 0;
+}
+.btn-apply, .btn-edit, .btn-applied {
+    padding: 12px 25px;
+    border-radius: var(--border-radius-sm);
+    text-decoration: none;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: block;
+}
+.btn-apply {
+    background-color: var(--primary-action-color);
+    color: var(--text-color-on-primary);
+}
+.btn-apply:hover {
+    background-color: var(--primary-action-dark);
+}
+.btn-edit {
+    background-color: var(--color-accent-interactive);
+    color: white;
+}
+.btn-edit:hover {
+    background-color: #2a5a8a; /* Darker blue */
+}
+.btn-applied {
+    background-color: #A0AEC0;
+    color: var(--color-bg-content);
+    cursor: default;
+}
+
+.job-details-body {
+    padding: 25px 30px;
+}
+
+.job-details-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+}
+
+.job-details-main h2 {
+    font-size: 1.3em;
+    color: var(--text-color-strong);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.description-content {
+    line-height: 1.7;
+    color: var(--text-color-base);
+}
+
+.skills-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.skill-tag {
+    background-color: var(--color-light-blue);
+    color: var(--color-primary-text);
+    font-size: 0.9em;
+    padding: 6px 14px;
+    border-radius: var(--border-radius-sm);
+    font-weight: 500;
+}
+.skill-tag.preferred {
+    background-color: transparent;
+    border: 1px solid var(--color-accent-interactive);
+    color: var(--color-accent-interactive);
+}
+
+.job-details-sidebar h3 {
+    font-size: 1.1em;
+    color: var(--text-color-strong);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px;
+}
+
+.overview-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.overview-list li {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+.overview-list .overview-label {
+    font-size: 0.85em;
+    color: var(--text-color-subtle);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.overview-list .overview-value {
+    font-size: 0.95em;
+    color: var(--text-color-base);
+    font-weight: 500;
+}
+
+.no-data-message {
+    font-style: italic;
+    color: var(--text-color-subtle);
+}
+
+@media (max-width: 800px) {
+    .job-details-grid {
+        grid-template-columns: 1fr; /* Stack columns on smaller screens */
+    }
+    .job-details-sidebar {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+    }
+}
+@media (max-width: 576px) {
+    .job-details-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .header-actions {
+        width: 100%;
+    }
+    .btn-apply, .btn-edit, .btn-applied {
+        width: 100%;
+        text-align: center;
+    }
+}

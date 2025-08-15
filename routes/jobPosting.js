@@ -94,65 +94,46 @@ router.get('/:id/edit', ensureAuthenticated, ensureRecruiter, async (req, res, n
 // GET route for anyone to view a single job posting
 router.get('/:id', async (req, res, next) => {
     const jobId = req.params.id;
-
-    if (jobId === 'new' || jobId === 'my') {
-        return next();
-    }
-
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        console.log(`Invalid ObjectId format for jobId in view: ${jobId}`);
         return res.status(404).render('error', { title: 'Not Found', message: 'Job posting ID is invalid.' });
     }
 
-
-    console.log(`GET /jobs/${jobId} - Fetching job for public view.`);
     try {
         const job = await JobPosting.findById(jobId).populate('recruiter_id', 'username');
 
         if (!job) {
-            console.log(`Job ${jobId} not found.`);
             return res.status(404).render('error', { title: 'Not Found', message: 'Job posting not found.' });
         }
 
         const isOwner = req.isAuthenticated() && req.user && req.user.role === 'recruiter' && job.recruiter_id && job.recruiter_id._id.toString() === req.user.id.toString();
 
         if (!job.isActive && !isOwner) {
-            console.log(`Job ${jobId} found but is inactive for public view.`);
             return res.status(404).render('error', { title: 'Not Found', message: 'This job posting is no longer active.' });
         }
-
-        console.log(`Job ${jobId} found. Proceeding to check application status if seeker.`);
 
         let hasApplied = false;
         let applicationStatus = null;
         if (req.isAuthenticated() && req.user && req.user.role === 'seeker') {
-            try {
-                const existingApplication = await Application.findOne({
-                    job_id: job._id,
-                    seeker_user_id: req.user.id
-                });
-                if (existingApplication) {
-                    hasApplied = true;
-                    applicationStatus = existingApplication.status;
-                }
-            } catch (applicationError) {
-                console.error("Error checking existing application:", applicationError);
+            const existingApplication = await Application.findOne({ job_id: job._id, seeker_user_id: req.user.id });
+            if (existingApplication) {
+                hasApplied = true;
+                applicationStatus = existingApplication.status;
             }
         }
-        console.log(`Job ${jobId} - Seeker ${req.user ? req.user.id : 'Guest'} - Has applied: ${hasApplied}, Status: ${applicationStatus}`);
 
-        console.log(`Rendering recruiter/viewJob for job ${jobId}.`);
         res.render('recruiter/viewJob', {
             title: job.jobTitle,
+            activeNavItem: 'browseJobs', // Or another appropriate key for sidebar highlighting
             job: job.toObject(),
             hasApplied,
             applicationStatus,
             isOwner,
+            // Pass all lists needed for displaying text values from IDs
             skillsList, degreeLevelsList, fieldsOfStudyList,
             locationsList, broaderCategoriesList, jobTypeList, careerLevelsList
         });
     } catch (err) {
-        console.error(`Error fetching job ${jobId} for view (in catch block):`, err);
+        console.error(`Error fetching job ${jobId} for view:`, err);
         next(err);
     }
 });
