@@ -1,6 +1,5 @@
-/* public/css/sidebar.css */
 .sidebar-container {
-    background-color: var(--color-sidebar-bg); /* White */
+    background-color: var(--color-sidebar-bg);
     color: var(--color-sidebar-text);
     display: flex;
     flex-direction: column;
@@ -41,7 +40,7 @@
 }
 
 .sidebar-nav-list li a {
-    display: block; 
+    display: block;
     padding: 13px 25px;
     margin: 4px 15px;
     color: var(--color-sidebar-text);
@@ -71,8 +70,8 @@
 }
 
 .logout-button {
-    display: block; 
-    width: 90%;
+    display: block;
+    width: 100%;
     padding: 12px;
     background-color: transparent;
     color: var(--color-primary-text);

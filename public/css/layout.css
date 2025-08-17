@@ -1,5 +1,5 @@
 :root {
-    --color-bg-page: #F1F6F9;       
+    --color-bg-page: #e9f3f7;       
     --color-bg-content: #FFFFFF;     
 
     --color-primary-dark: #14274E;    
@@ -62,7 +62,7 @@ body {
     grid-column: 1 / 2;
     grid-row: 1 / 2; 
     background-color: var(--color-sidebar-bg);
-    border-right: 1px solid var(--color-sidebar-border);
+    /* border-right: 1px solid var(--color-sidebar-border); */
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -86,7 +86,7 @@ body {
 .main-content-area {
     flex-grow: 1; 
     overflow-y: auto; 
-    padding: 20px 35px; 
+    padding: 15px 35px; 
     background-color: var(--color-bg-page);
 }
 

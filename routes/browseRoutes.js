@@ -1,4 +1,3 @@
-// routes/browseRoutes.js
 const express = require('express');
 const router = express.Router();
 
@@ -11,7 +10,6 @@ const {
 } = require('../config/selectData');
 
 router.get('/jobs', ensureAuthenticated, async (req, res, next) => {
-    console.log("GET /browse/jobs - Query params:", req.query);
     try {
         const {
             jobLocation, jobType, careerLevel, skills
@@ -19,15 +17,9 @@ router.get('/jobs', ensureAuthenticated, async (req, res, next) => {
 
         let filterQuery = { isActive: true };
 
-        if (jobLocation && jobLocation !== '') {
-            filterQuery.jobLocation = jobLocation;
-        }
-        if (jobType && jobType !== '') {
-            filterQuery.jobType = jobType;
-        }
-        if (careerLevel && careerLevel !== '') {
-            filterQuery.careerLevel = careerLevel;
-        }
+        if (jobLocation && jobLocation !== '') filterQuery.jobLocation = jobLocation;
+        if (jobType && jobType !== '') filterQuery.jobType = jobType;
+        if (careerLevel && careerLevel !== '') filterQuery.careerLevel = careerLevel;
 
         if (skills) {
             const skillsToFilter = Array.isArray(skills) ? skills : [skills];
@@ -37,12 +29,10 @@ router.get('/jobs', ensureAuthenticated, async (req, res, next) => {
             }
         }
 
-        console.log("Constructed filter query for /browse/jobs:", filterQuery);
         const jobs = await JobPosting.find(filterQuery)
             .sort({ postedDate: -1 })
             .populate('recruiter_id', 'companyName username');
 
-        console.log(`Found ${jobs.length} jobs after filtering for /browse/jobs.`);
         res.render('job/browseJobs', {
             title: 'Browse Jobs',
             activeNavItem: 'browseJobs',
@@ -63,7 +53,6 @@ router.get('/jobs', ensureAuthenticated, async (req, res, next) => {
 });
 
 router.get('/seekers', ensureAuthenticated, ensureRecruiter, async (req, res, next) => {
-    console.log("GET /browse/seekers - Query params:", req.query);
     try {
         const {
             skills: seekerSkills,
@@ -80,19 +69,13 @@ router.get('/seekers', ensureAuthenticated, ensureRecruiter, async (req, res, ne
                 filterQuery.skills = { $all: validSkills };
             }
         }
-        if (degreeLevel && degreeLevel !== '') {
-            filterQuery.degreeLevel = degreeLevel;
-        }
-        if (fieldOfStudy && fieldOfStudy !== '') {
-            filterQuery.fieldOfStudy = fieldOfStudy;
-        }
+        if (degreeLevel && degreeLevel !== '') filterQuery.degreeLevel = degreeLevel;
+        if (fieldOfStudy && fieldOfStudy !== '') filterQuery.fieldOfStudy = fieldOfStudy;
 
-        console.log("Constructed filter query for /browse/seekers:", filterQuery);
         const seekers = await JobSeekerProfile.find(filterQuery)
             .populate('user_id', 'username email')
             .limit(50);
 
-        console.log(`Found ${seekers.length} seekers after filtering for /browse/seekers.`);
         res.render('recruiter/browseSeekers', {
             title: 'Browse Job Seekers',
             activeNavItem: 'browseSeekers',

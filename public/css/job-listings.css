@@ -1,219 +1,174 @@
 /* public/css/job-listings.css */
 
 .page-header {
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    padding-bottom: 0px;
+    border-bottom: 1px solid var(--color-border);
 }
 .page-header h1 {
-    font-size: 1.8em;
-    color: var(--text-color-strong);
-    margin-bottom: 5px;
+    font-size: 1.875rem;
+    color: var(--color-text-strong);
+    font-weight: 700;
+    margin: 0;
 }
 .page-header p {
-    font-size: 1em;
-    color: var(--text-color-subtle);
-    margin-top: 0;
+    font-size: 1rem;
+    color: var(--color-text-subtle);
+    margin-top: 4px;
+    margin-left: auto;
 }
 
 .filter-form-container {
-    margin-bottom: 30px;
-}
-.filter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 2fr));
-    gap: 20px;
-    align-items: end;
-}
-.select2-container {
-    width: 90% !important; 
+    background-color: var(--color-bg-content);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+    margin-bottom: 25px;
 }
 
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    /* align-items: end; */
+}
 .filter-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    font-size: 0.9em;
+    font-size: 0.9rem;
+    color: var(--color-text-base);
 }
 .filter-buttons {
-    margin-top: 20px;
+    margin-top: 5px;
     display: flex;
     gap: 10px;
 }
-.btn-apply-filters, .btn-clear-filters {
-    padding: 10px 20px;
-    border-radius: var(--border-radius-sm);
-    text-decoration: none;
-    font-size: 0.95em;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
+.btn {
+    display: inline-block; padding: 0.55rem 1.5rem; font-size: 0.9rem; font-weight: 600;
+    text-align: center; text-decoration: none; border-radius: var(--border-radius);
+    border: 1px solid transparent; cursor: pointer; transition: all 0.2s ease-in-out;
 }
-.btn-apply-filters {
-    background-color: var(--primary-action-color);
-    color: var(--text-color-on-primary);
-    border-color: var(--primary-action-color);
-}
-.btn-apply-filters:hover {
-    background-color: var(--primary-action-dark);
-    border-color: var(--primary-action-dark);
-}
-.btn-clear-filters {
-    background-color: transparent;
-    color: var(--text-color-subtle);
-    border-color: var(--border-color);
-}
-.btn-clear-filters:hover {
-    background-color: var(--color-bg-page);
-    border-color: var(--text-color-subtle);
-}
+.btn-primary { background-color: var(--color-primary); color: var(--color-text-on-primary); }
+.btn-primary:hover { background-color: var(--color-primary-dark); transform: translateY(-1px); box-shadow: 0 7px 10px -5px rgba(37, 99, 235, 0.4); }
+.btn-secondary { background-color: var(--color-bg-content); color: var(--color-text-base); border-color: var(--color-border); }
+.btn-secondary:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
 
 .results-count {
-    font-size: 0.9em;
-    color: var(--text-color-subtle);
-    margin-bottom: 15px;
+    font-size: 0.95em;
+    color: var(--color-text-subtle);
+    margin-bottom: 5px;
+    margin-left: 5px;
 }
 
-.job-card-listing {
-    background-color: var(--background-color-content);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    padding: 20px 25px;
+.job-listings-container {
+    display: grid;
+    gap: 25px;
     margin-bottom: 20px;
-    box-shadow: var(--shadow-sm);
+}
+
+.job-card {
+    background-color: var(--color-bg-content);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
-.job-card-listing:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
+.job-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
 }
-
-.job-card-main-content {
+.job-card__header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+.job-card__logo {
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-bg-page);
+    color: var(--color-text-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-right: 16px;
+    flex-shrink: 0;
+}
+.job-card__info {
     flex-grow: 1;
 }
-
-.job-card-header-listing {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 10px;
-}
-
-.job-title-company h3 {
-    font-size: 1.25em;
-    margin-bottom: 3px;
-}
-.job-title-company h3 a {
-    color: var(--text-color-strong);
+.job-card__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-strong);
+    margin: 0 0 4px 0;
     text-decoration: none;
 }
-.job-title-company h3 a:hover {
-    color: var(--color-accent-interactive);
+.job-card__title:hover {
+    color: var(--color-primary);
 }
-.job-title-company .company-name {
-    font-size: 0.95em;
-    color: var(--text-color-subtle);
+.job-card__company {
+    font-size: 0.9rem;
+    color: var(--color-text-subtle);
+    margin: 0;
 }
-
-.location-info {
-    font-size: 0.9em;
-    color: var(--text-color-subtle);
-    margin-bottom: 12px;
+.job-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 0.85rem;
+    color: var(--color-text-subtle);
+    margin-bottom: 16px;
+}
+.job-card__meta-item {
     display: flex;
     align-items: center;
 }
-.location-icon {
-    width: 16px; height: 16px; margin-right: 6px;
-    fill: var(--text-color-subtle);
+.job-card__meta-item svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
 }
-.remote-tag {
-    font-size: 0.8em;
-    color: var(--text-color-subtle);
-    margin-left: 8px;
-    font-style: italic;
+.job-card__skills {
+    margin-bottom: 20px;
+    flex-grow: 1;
 }
-
-.job-description-snippet {
-    font-size: 0.95em;
-    color: var(--text-color-base);
-    line-height: 1.5;
-    margin-bottom: 15px;
-}
-
-.skills-tags-listing {
-    margin-bottom: 15px;
-}
-.skills-tags-listing strong {
-    font-size: 0.9em;
-    color: var(--text-color-medium);
-    margin-right: 5px;
-    font-weight: 500;
-}
-.skill-tag {
-    background-color: var(--color-bg-page);
-    color: var(--color-primary-text);
-    font-size: 0.8em;
+.job-card__skill-tag {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+    font-size: 0.75rem;
     padding: 4px 10px;
-    border-radius: var(--border-radius-sm);
+    border-radius: 999px;
     margin-right: 6px;
     display: inline-block;
     margin-bottom: 6px;
     font-weight: 500;
-    border: 1px solid var(--border-color);
 }
-
-.job-card-footer {
-    margin-top: auto;
-    padding-top: 15px;
-    border-top: 1px solid var(--border-color);
+.job-card__footer {
+    
+    border-top: 1px solid var(--color-border);
+    padding-top: 12px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 10px;
-}
+    /* gap: 5px; */
 
-.btn-view-details, .btn-apply-now, .btn-applied {
-    padding: 8px 18px;
-    border-radius: var(--border-radius-sm);
-    text-decoration: none;
-    font-size: 0.9em;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-    border: 1px solid transparent;
-}
-
-.btn-view-details {
-    background-color: transparent;
-    color: var(--color-accent-interactive);
-    border-color: var(--color-accent-interactive);
-}
-.btn-view-details:hover {
-    background-color: var(--color-accent-interactive);
-    color: white;
-}
-
-.btn-apply-now {
-    background-color: var(--primary-action-color);
-    color: var(--text-color-on-primary);
-}
-.btn-apply-now:hover {
-    background-color: var(--primary-action-dark);
-}
-
-.btn-applied {
-    background-color: #A0AEC0;
-    color: var(--color-bg-content);
-    border-color: #A0AEC0;
-    cursor: default;
 }
 
 .no-results-card {
     text-align: center;
-    color: var(--text-color-subtle);
-    border: 1px dashed var(--border-color);
+    color: var(--color-text-subtle);
+    border: 1px dashed var(--color-border);
     box-shadow: none;
 }

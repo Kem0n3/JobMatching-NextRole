@@ -4,31 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { /* Your Color Palette */
-            --color-bg-page: #F1F6F9; --color-bg-content: #FFFFFF;
-            --color-primary-text: #394867; --color-sidebar-bg: #FFFFFF;
-            --color-sidebar-text: var(--color-primary-text);
-            --color-sidebar-active-text: #14274E; --color-sidebar-active-bg: #DBE2EF;
-            --color-accent-interactive: #3F72AF; --color-accent-action: #F05454;
-            --primary-action-color: var(--color-accent-action); --primary-action-dark: #d94242;
-            --text-color-on-primary: #ffffff; --text-color-base: var(--color-primary-text);
-            --text-color-strong: #14274E; --text-color-subtle: #6c757d;
-            --text-color-inverted: var(--color-primary-text);
-            --text-color-link: var(--color-accent-interactive);
-            --text-color-link-hover: var(--color-accent-action);
-            --background-color-navbar: #FFFFFF; --border-color: #DBE2EF;
-            --border-radius-sm: 6px; --border-radius-md: 10px;
-            --font-family-main: 'Inter', sans-serif;
-            --navbar-height: 65px; --sidebar-width: 270px;
-            --shadow-sm: 0 2px 5px rgba(20, 39, 78, 0.06); --shadow-md: 0 5px 15px rgba(20, 39, 78, 0.08);
+        :root {
+            --color-primary: #2563eb; --color-primary-dark: #1d4ed8; --color-primary-light: #dbeafe;
+            --color-text-strong: #111827; --color-text-base: #374151; --color-text-subtle: #6b7280;
+            --color-text-on-primary: #ffffff; --color-bg-page: #f9fafb; --color-bg-content: #ffffff;
+            --color-border: #e5e7eb; --font-family-main: 'Inter', sans-serif;
+            --border-radius: 0.75rem; --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
     </style>
     <link rel="stylesheet" href="/css/layout.css">
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/sidebar.css">
-    <link rel="stylesheet" href="/css/profile.css"> 
+    <link rel="stylesheet" href="/css/profile.css">
 </head>
 <body>
     <div class="app-shell">
@@ -54,7 +45,7 @@
                             </div>
                         </div>
 
-                        <% if (profileData.summary) { %>
+                        <% if (profileData.summary && profileData.summary.trim() !== '') { %>
                             <div class="profile-card">
                                 <h2>Summary</h2>
                                 <p class="summary-text"><%= profileData.summary %></p>
@@ -93,7 +84,7 @@
                         </div>
 
                         <div class="profile-card">
-                            <h2>Education</h2>
+                            <h2>Education & Preferences</h2>
                             <ul class="profile-details-list">
                                 <li>
                                     <span class="detail-label">Degree Level</span>
@@ -105,12 +96,6 @@
                                     <% const field = locals.fieldsOfStudyList && fieldsOfStudyList.find(f => f.id === profileData.fieldOfStudy); %>
                                     <span class="detail-value"><%= field ? field.text : (profileData.fieldOfStudy || 'N/A') %></span>
                                 </li>
-                            </ul>
-                        </div>
-
-                        <div class="profile-card">
-                            <h2>Job Preferences</h2>
-                            <ul class="profile-details-list">
                                 <li>
                                     <span class="detail-label">Desired Job Types</span>
                                     <div class="detail-value">
@@ -118,7 +103,7 @@
                                             <div class="preferences-tags-container">
                                                 <% profileData.desiredJobTypes.forEach(typeId => { %>
                                                     <% const typeObj = locals.jobTypeList && jobTypeList.find(t => t.id === typeId); %>
-                                                    <span class="preference-tag"><%= typeObj ? typeObj.text : typeId %></span>
+                                                    <span class="detail-value"><%= typeObj ? typeObj.text : typeId %></span>
                                                 <% }); %>
                                             </div>
                                         <% } else { %>
@@ -133,7 +118,7 @@
                                             <div class="preferences-tags-container">
                                                 <% profileData.preferredLocations.forEach(locId => { %>
                                                     <% const locObj = locals.locationsList && locals.locationsList.find(l => l.id === locId); %>
-                                                    <span class="preference-tag"><%= locObj ? locObj.text : locId %></span>
+                                                    <span class="detail-value"><%= locObj ? locObj.text : locId %></span>
                                                 <% }); %>
                                             </div>
                                         <% } else { %>

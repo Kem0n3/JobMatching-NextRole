@@ -4,26 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=browse" />
     <style>
         :root {
-            --color-bg-page: #F1F6F9; --color-bg-content: #FFFFFF;
-            --color-primary-text: #394867; --color-sidebar-bg: #FFFFFF;
-            --color-sidebar-text: var(--color-primary-text);
-            --color-sidebar-active-text: #14274E; --color-sidebar-active-bg: #DBE2EF;
-            --color-accent-interactive: #3F72AF; --color-accent-action: #F05454;
-            --primary-action-color: var(--color-accent-action); --primary-action-dark: #d94242;
-            --text-color-on-primary: #ffffff; --text-color-base: var(--color-primary-text);
-            --text-color-strong: #14274E; --text-color-subtle: #6c757d;
-            --text-color-inverted: var(--color-primary-text);
-            --text-color-link: var(--color-accent-interactive); 
-            --text-color-link-hover: var(--color-accent-action);
-            --background-color-navbar: #FFFFFF; --border-color: #DBE2EF;
-            --border-radius-sm: 6px; --border-radius-md: 10px;
-            --font-family-main: 'Inter', sans-serif;
-            --navbar-height: 65px; --sidebar-width: 270px;
-            --shadow-sm: 0 2px 5px rgba(20, 39, 78, 0.06); --shadow-md: 0 5px 15px rgba(20, 39, 78, 0.08);
+            --color-primary: #2563eb; --color-primary-dark: #1d4ed8; --color-primary-light: #dbeafe;
+            --color-text-strong: #111827; --color-text-base: #374151; --color-text-subtle: #6b7280;
+            --color-text-on-primary: #ffffff; --color-bg-page: #f9fafb; --color-bg-content: #ffffff;
+            --color-border: #e5e7eb; --font-family-main: 'Inter', sans-serif;
+            --border-radius: 0.75rem; --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
     </style>
     <link rel="stylesheet" href="/css/layout.css">
@@ -41,150 +31,136 @@
             <header class="navbar-area">
                 <%- include('../partials/navbar') %>
             </header>
+
             <main class="main-content-area">
                 <div class="dashboard-header">
-                    <h1><%= title %></h1>
+                    <h1>Dashboard</h1>
                     <% if (locals.displayNameForNav) { %>
-                        <p>Here's your overview, <%= locals.displayNameForNav.split(' ')[0] %>.</p>
+                        <p>Welcome back, <%= locals.displayNameForNav.split(' ')[0] %>! Here's your job search overview.</p>
                     <% } %>
                 </div>
 
-                <div class="stats-cards-container">
+                <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-card-icon">
-                            <svg fill="var(--color-accent-interactive)" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <div class="stat-card__header">
+                            <span class="stat-card__title">Job Matches</span>
+                            <span class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span>
                         </div>
-                        <div class="stat-card-info">
-                            <h3>Active Applications</h3>
-                            <p class="stat-number"><%= locals.activeApplicationsCount || 0 %></p>
-                        </div>
+                        <div class="stat-card__value"><%= locals.matchedJobsCount || 0 %></div>
                     </div>
                     <div class="stat-card">
-                         <div class="stat-card-icon">
-                            <svg fill="var(--color-accent-interactive)" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <div class="stat-card__header">
+                            <span class="stat-card__title">Applications</span>
+                            <span class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></span>
                         </div>
-                        <div class="stat-card-info">
-                            <h3>Offers / Hired</h3>
-                            <p class="stat-number"><%= locals.offersOrHiredCount || 0 %></p>
-                        </div>
+                        <div class="stat-card__value"><%= locals.activeApplicationsCount || 0 %></div>
                     </div>
                     <div class="stat-card">
-                         <div class="stat-card-icon">
-                            <svg fill="var(--color-accent-interactive)" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        <div class="stat-card__header">
+                            <span class="stat-card__title">Offers / Hired</span>
+                            <span class="stat-card__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
                         </div>
-                        <div class="stat-card-info">
-                            <h3>Matched Jobs</h3>
-                            <p class="stat-number"><%= locals.matchedJobsCount || 0 %></p>
-                        </div>
+                        <div class="stat-card__value"><%= locals.offersOrHiredCount || 0 %></div>
                     </div>
                 </div>
 
-                <section class="dashboard-section recommended-jobs">
-                    <div class="section-header">
-                        <h2>Recommended Jobs</h2>
-                        <a href="/matches/jobs" class="view-all-link">View all →</a>
-                    </div>
-                    <div class="jobs-container">
-                        <% if (locals.recommendedJobs && locals.recommendedJobs.length > 0) { %>
-                            <% recommendedJobs.slice(0, 3).forEach(function(job) { %>
-                                <div class="job-card">
-                                    <div class="job-card-content">
-                                        <div class="job-card-top-info">
-                                            <div class="job-card-title-company">
-                                                <a href="/jobs/<%= job._id %>" class="job-title-link"><%= job.jobTitle %></a>
-                                                <p class="company-name-rec"><%= job.companyName %></p>
-                                            </div>
-                                            <%
-                                                let matchScoreNum = (typeof job.matchScore === 'number') ? job.matchScore : 0;
-                                                let percentage = (matchScoreNum * 100).toFixed(0);
-                                                let matchClass = (percentage >= 50) ? 'high-match' : 'low-match';
-                                            %>
-                                            <div class="match-percentage-circular <%= matchClass %>"
-                                                title="<%= percentage %>% Match">
-                                                <span class="number"><%= percentage %></span><span class="text">%</span>
-                                            </div>
-                                        </div>
-                                        <% const locObj = locals.locationsList && locals.locationsList.find(l => l.id === job.jobLocation); %>
-                                        <p class="location-rec">
-                                            <svg class="location-icon" viewBox="0 0 24 24" fill="currentColor" width="16px" height="16px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
-                                            <%= locObj ? locObj.text : (job.jobLocation || 'N/A') %>
-                                        </p>
-                                        <div class="skills-tags-rec">
-                                            <% if (job.requiredSkills && job.requiredSkills.length > 0) { %>
-                                                <% job.requiredSkills.slice(0, 3).forEach(skillId => { %>
-                                                    <% const skillObj = locals.skillsList && locals.skillsList.find(s => s.id === skillId); %>
-                                                    <span class="skill-tag-rec"><%= skillObj ? skillObj.text : skillId %></span>
-                                                <% }); %>
-                                            <% } %>
-                                        </div>
+                <div class="section-header" style="margin-top: 40px;">
+                    <h2>Recommended Jobs</h2>
+                    <a href="/matches/jobs" class="view-all-link">View all</a>
+                </div>
+
+                <div class="jobs-grid">
+                    <% if (locals.recommendedJobs && locals.recommendedJobs.length > 0) { %>
+                        <% recommendedJobs.forEach(function(job) { %>
+                            <div class="job-card">
+                                <div class="job-card__header">
+                                    <div class="job-card__logo"><%= job.companyName ? job.companyName.charAt(0).toUpperCase() : 'C' %></div>
+                                    <div class="job-card__info">
+                                        <a href="/jobs/<%= job._id %>" class="job-card__title"><%= job.jobTitle %></a>
+                                        <p class="job-card__company"><%= job.companyName %></p>
                                     </div>
+                                    <% let matchScoreNum = (typeof job.matchScore === 'number') ? job.matchScore : 0; %>
+                                    <div class="job-card__match"><%= (matchScoreNum * 100).toFixed(0) %>%</div>
+                                </div>
+                                <div class="job-card__meta">
+                                    <div class="job-card__meta-item">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                        <% const locObj = locals.locationsList && locals.locationsList.find(l => l.id === job.jobLocation); %>
+                                        <span><%= locObj ? locObj.text : (job.jobLocation || 'N/A') %></span>
+                                    </div>
+                                </div>
+                                <div class="job-card__skills">
+                                    <% if (job.requiredSkills && job.requiredSkills.length > 0) { %>
+                                        <% job.requiredSkills.slice(0, 3).forEach(skillId => { %>
+                                            <% const skillObj = locals.skillsList && locals.skillsList.find(s => s.id === skillId); %>
+                                            <span class="job-card__skill-tag"><%= skillObj ? skillObj.text : skillId %></span>
+                                        <% }); %>
+                                    <% } %>
+                                </div>
+                                <div class="job-card__footer">
                                     <% if (isAuthenticated && currentUser.role === 'seeker' && job.isActive) { %>
                                         <% if (typeof job.hasApplied !== 'undefined' && job.hasApplied) { %>
-                                            <button class="quick-apply-btn-rec applied-btn-rec" disabled>Applied</button>
+                                            <button class="btn btn-applied" disabled style="width:100%;">Applied</button>
                                         <% } else { %>
-                                            <form action="/applications/apply/<%= job._id %>" method="POST" style="margin-top: auto;">
-                                                <button type="submit" class="quick-apply-btn-rec">Quick Apply</button>
+                                            <form action="/applications/apply/<%= job._id %>" method="POST" style="width:100%;">
+                                                <button type="submit" class="btn btn-primary" style="width:100%;">Quick Apply</button>
                                             </form>
                                         <% } %>
                                     <% } %>
                                 </div>
-                            <% }); %>
-                        <% } else { %>
-                            <p>No specific job recommendations right now. Ensure your profile is complete!</p>
-                        <% } %>
-                    </div>
-                </section>
-
-                <div class="dashboard-row">
-                    <div class="dashboard-column">
-                        <section class="dashboard-section card recent-applications-section">
-                            <div class="section-header">
-                                <h2>Recent Applications</h2>
-                                <a href="/applications/my" class="view-all-link">View all →</a>
                             </div>
-                            <ul class="application-list">
-                                 <% if (locals.recentApplications && locals.recentApplications.length > 0) { %>
-                                    <% recentApplications.forEach(function(app) { %>
-                                        <li>
-                                            <div class="application-info">
-                                                <% if (app.job_id && app.job_id.jobTitle) { %>
-                                                    <a href="/jobs/<%= app.job_id._id %>" class="job-title-link-app"><%= app.job_id.jobTitle %></a>
-                                                    <span class="company-name-app"> at <%= app.job_id.companyName %></span>
-                                                <% } else { %>
-                                                    <span class="job-title-link-app">Job details unavailable</span>
-                                                <% } %>
-                                            </div>
-                                            <div class="application-details">
-                                                <span class="status-tag status-<%= app.status ? app.status.replace(/\s+/g, '').toLowerCase() : 'unknown' %>">
-                                                    <%= app.status || 'Unknown' %>
-                                                </span>
-                                                <div class="application-date">
-                                                    Applied: <%= new Date(app.applicationDate).toLocaleDateString() %>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    <% }); %>
-                                <% } else { %>
-                                    <li class="no-applications-message">No recent applications.</li>
-                                <% } %>
-                            </ul>
-                        </section>
-                    </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p>No job recommendations found. Please complete your profile.</p>
+                    <% } %>
+                </div>
 
-                    <div class="dashboard-column"> 
-                        <section class="dashboard-section card application-tracker-section">
-                            <div class="section-header">
-                                 <h2>Application Tracker</h2>
-                            </div>
-                            <% if (locals.applicationStatusCounts && Object.keys(locals.applicationStatusCounts).length > 0) { %>
-                                <div class="chart-container">
-                                    <canvas id="applicationStatusChart"></canvas>
+                <div class="section-header" style="margin-top: 40px;">
+                    <h2>Recent Applications</h2>
+                    <a href="/applications/my" class="view-all-link">View all</a>
+                </div>
+
+                <div class="application-list-container">
+                    <% if (locals.recentApplications && locals.recentApplications.length > 0) { %>
+                        <% recentApplications.forEach(function(app) { %>
+                            <div class="application-item">
+                                <div class="application-item__logo">
+                                    <% if (app.job_id && app.job_id.companyName) { %>
+                                        <%= app.job_id.companyName.charAt(0).toUpperCase() %>
+                                    <% } else { %>?<% } %>
                                 </div>
-                            <% } else { %>
-                                <p>No application data to display for tracker.</p>
-                            <% } %>
-                        </section>
-                    </div>
+                                <div class="application-item__info">
+                                    <% if (app.job_id && app.job_id.jobTitle) { %>
+                                        <a href="/jobs/<%= app.job_id._id %>" class="application-item__title"><%= app.job_id.jobTitle %></a>
+                                        <p class="application-item__company"><%= app.job_id.companyName %></p>
+                                    <% } else { %>
+                                        <span class="application-item__title">Job details unavailable</span>
+                                    <% } %>
+                                </div>
+                                <div class="application-item__meta">
+                                    <span class="status-tag status-<%= app.status ? app.status.replace(/\s+/g, '').toLowerCase() : 'unknown' %>">
+                                        <%= app.status || 'Unknown' %>
+                                    </span>
+                                    <p class="application-item__date">Applied: <%= new Date(app.applicationDate).toLocaleDateString() %></p>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p class="no-applications-message" style="padding: 20px; text-align: center;">You haven't applied to any jobs yet.</p>
+                    <% } %>
+                </div>
+
+                <div class="section-header" style="margin-top: 40px;">
+                    <h2>Application Tracker</h2>
+                </div>
+                <div class="application-tracker-container card">
+                    <% if (locals.applicationStatusCounts && Object.keys(locals.applicationStatusCounts).length > 0) { %>
+                        <div class="chart-container">
+                            <canvas id="applicationStatusChart"></canvas>
+                        </div>
+                    <% } else { %>
+                        <p>No application data to display for tracker.</p>
+                    <% } %>
                 </div>
 
             </main>
@@ -199,5 +175,6 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="/js/main.js"></script>
         <script src="/js/dashboardCharts.js"></script>
-    </body>
-    </html>
+    </div>
+</body>
+</html>
