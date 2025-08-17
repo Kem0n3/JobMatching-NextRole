@@ -45,7 +45,7 @@
     font-weight: 600;
     text-align: center;
     text-decoration: none;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-sm);
     border: 1px solid transparent;
     cursor: pointer;
     transition: all 0.2s ease-in-out;

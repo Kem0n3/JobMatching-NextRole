@@ -1,130 +1,128 @@
 /* public/css/applications.css */
 
 .page-header {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--color-border);
 }
 .page-header h1 {
-    font-size: 1.8em;
-    color: var(--text-color-strong);
-    margin-bottom: 5px;
+    font-size: 1.875rem;
+    color: var(--color-text-strong);
+    font-weight: 700;
+    margin: 0;
 }
 .page-header p {
-    font-size: 1em;
-    color: var(--text-color-subtle);
-    margin-top: 0;
+    font-size: 1rem;
+    color: var(--color-text-subtle);
+    margin-top: 4px;
+}
+
+.applications-container {
+    display: grid;
+    gap: 16px;
 }
 
 .application-card {
-    background-color: var(--background-color-content);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    padding: 20px 25px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow-sm);
+    background-color: var(--color-bg-content);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 16px 24px;
+    box-shadow: var(--shadow);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
     gap: 20px;
     transition: box-shadow 0.2s ease-in-out;
 }
 .application-card:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 10px -2px rgba(0,0,0,0.08);
 }
 
 .application-card-main {
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     flex-grow: 1;
 }
 
 .company-logo-placeholder {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     background-color: var(--color-bg-page);
-    color: var(--color-primary-text);
+    color: var(--color-text-base);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--border-radius);
     font-weight: 600;
-    font-size: 1.8em;
-    margin-right: 20px;
+    font-size: 1.5rem;
+    margin-right: 16px;
     flex-shrink: 0;
 }
 
 .application-info h3 {
-    font-size: 1.2em;
+    font-size: 1.1rem;
     margin-bottom: 2px;
 }
 .application-info h3 a {
-    color: var(--text-color-strong);
+    color: var(--color-text-strong);
     text-decoration: none;
+    font-weight: 600;
 }
 .application-info h3 a:hover {
-    color: var(--color-accent-interactive);
+    color: var(--color-primary);
 }
 .application-info .company-name {
-    font-size: 0.95em;
-    color: var(--text-color-subtle);
+    font-size: 0.9rem;
+    color: var(--color-text-subtle);
     margin-bottom: 8px;
+    margin-left: 5px;
 }
 .application-info .location-info {
-    font-size: 0.9em;
-    color: var(--text-color-subtle);
+    font-size: 0.85rem;
+    color: var(--color-text-subtle);
     display: flex;
     align-items: center;
 }
 .location-icon {
     width: 14px; height: 14px; margin-right: 6px;
-    fill: var(--text-color-subtle);
+    fill: currentColor;
 }
 
 .application-card-status {
     text-align: right;
-    flex-shrink: 0; 
-    min-width: 150px; 
-}
-
-.status-label {
-    font-size: 0.8em;
-    color: var(--text-color-subtle);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: block;
-    margin-bottom: 5px;
+    flex-shrink: 0;
+    min-width: 120px;
 }
 
 .status-tag {
     display: inline-block;
-    padding: 5px 12px;
-    border-radius: var(--border-radius-sm);
-    font-size: 0.85em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
     font-weight: 600;
+    margin-bottom: 4px;
     text-align: center;
-    margin-bottom: 8px;
 }
 
 .application-date {
-    font-size: 0.8em;
-    color: var(--text-color-subtle);
+    font-size: 0.8rem;
+    color: var(--color-text-subtle);
     display: block;
 }
 
-
-.status-applied { background-color: #DBE2EF; color: #394867; border: 1px solid #394867; }
-.status-viewed, .status-underreview { background-color: #FFF3CD; color: #856404; border: 1px solid #FFDA6A; }
-.status-interviewing, .status-offered { background-color: #b3e0ea; color: #0c5460; border: 1px solid #17a2b8; }
-.status-hired { background-color: #c3e6cb; color: #155724; border: 1px solid #28a745; }
-.status-rejected, .status-withdrawn { background-color: #f8d7da; color: #721c24; border: 1px solid #dc3545; }
-.status-unknown { background-color: #E0E0E0; color: #616161; border: 1px solid #BDBDBD; }
+/* Status Tag Specific Colors */
+.status-applied { background-color: #dbeafe; color: #3b82f6; }
+.status-viewed, .status-underreview { background-color: #fef3c7; color: #d97706; }
+.status-interviewing, .status-offered { background-color: #d1fae5; color: #059669; }
+.status-hired { background-color: #a7f3d0; color: #047857; }
+.status-rejected, .status-withdrawn { background-color: #fee2e2; color: #ef4444; }
+.status-unknown { background-color: #e5e7eb; color: #4b5563; }
 
 .no-results-card {
     text-align: center;
     padding: 40px;
-    border: 1px dashed var(--border-color);
+    border: 1px dashed var(--color-border);
     box-shadow: none;
 }
 .no-results-card h2 {
@@ -133,12 +131,13 @@
 .btn-browse-jobs {
     display: inline-block;
     margin-top: 20px;
-    background-color: var(--primary-action-color);
-    color: var(--text-color-on-primary);
-    padding: 10px 22px;
-    border-radius: var(--border-radius-sm);
-    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
     text-decoration: none;
+    border-radius: var(--border-radius);
+    background-color: var(--color-primary);
+    color: var(--color-text-on-primary);
 }
 
 @media (max-width: 576px) {
@@ -150,7 +149,7 @@
         text-align: left;
         margin-top: 15px;
         padding-top: 15px;
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--color-border);
         width: 100%;
     }
 }

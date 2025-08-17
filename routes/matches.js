@@ -1,98 +1,106 @@
-// routes/matches.js
- const express = require('express');
- const router = express.Router();
- const JobSeekerProfile = require('../models/JobSeekerProfile');
- const JobPosting = require('../models/JobPosting');
- const { ensureAuthenticated, ensureSeeker, ensureRecruiter } = require('../middleware/authMiddleware');
- const { calculateOverallMatchScore } = require('../services/matchingService'); 
- const { skillsList, degreeLevelsList, fieldsOfStudyList, locationsList, broaderCategoriesList, jobTypeList, careerLevelsList } = require('../config/selectData');
+const express = require('express');
+const router = express.Router();
+const JobSeekerProfile = require('../models/JobSeekerProfile');
+const JobPosting = require('../models/JobPosting');
+const Application = require('../models/Application');
+const { ensureAuthenticated, ensureSeeker, ensureRecruiter } = require('../middleware/authMiddleware');
+const { calculateOverallMatchScore } = require('../services/matchingService');
+const {
+    skillsList, degreeLevelsList, fieldsOfStudyList,
+    locationsList, broaderCategoriesList, jobTypeList, careerLevelsList
+} = require('../config/selectData');
 
+router.get('/jobs', ensureAuthenticated, ensureSeeker, async (req, res, next) => {
+    try {
+        const seekerProfile = await JobSeekerProfile.findOne({ user_id: req.user.id });
+        if (!seekerProfile) {
+            if(req.flash) req.flash('error_msg', 'Please complete your profile to view matched jobs.');
+            return res.redirect('/profile/form');
+        }
 
- // --- For Job Seekers: View Matched Jobs ---
- router.get('/jobs', ensureAuthenticated, ensureSeeker, async (req, res) => {
-     console.log("GET /matches/jobs - Seeker viewing matched jobs");
-     try {
-         const seekerProfile = await JobSeekerProfile.findOne({ user_id: req.user.id });
-         if (!seekerProfile) {
-             if(req.flash) req.flash('error_msg', 'Please complete your profile to view matched jobs.');
-             return res.redirect('/profile/form');
-         }
+        const allActiveJobs = await JobPosting.find({ isActive: true }).populate('recruiter_id', 'companyName');
+        const applicationsForJobs = await Application.find({ seeker_user_id: req.user.id }).select('job_id -_id');
+        const appliedJobIds = applicationsForJobs.map(app => app.job_id.toString());
 
-         const allActiveJobs = await JobPosting.find({ isActive: true }).populate('recruiter_id', 'companyName'); // Populate company name if it's on User model for recruiter
-         const matchedJobs = [];
+        let matchedJobs = [];
 
-         console.log(`Calculating matches for seeker ${seekerProfile.fullName} against ${allActiveJobs.length} jobs.`);
+        for (const job of allActiveJobs) {
+            const score = calculateOverallMatchScore(seekerProfile, job);
+            if (score > 0.3) {
+                matchedJobs.push({
+                    ...job.toObject(),
+                    matchScore: score,
+                    hasApplied: appliedJobIds.includes(job._id.toString())
+                });
+            }
+        }
 
-         for (const job of allActiveJobs) {
-             const score = calculateOverallMatchScore(seekerProfile, job);
-             // console.log(`Job: ${job.jobTitle}, Score: ${score}`); 
-             if (score > 0.5) { // Threshold score
-                 matchedJobs.push({ ...job.toObject(), matchScore: score });
-             }
-         }
+        matchedJobs.sort((a, b) => b.matchScore - a.matchScore);
 
-         matchedJobs.sort((a, b) => b.matchScore - a.matchScore); 
+        res.render('seeker/matchedJobs', {
+            title: 'Matched Jobs',
+            activeNavItem: 'matchedJobs',
+            jobs: matchedJobs,
+            skillsList,
+            locationsList,
+            jobTypeList,
+            careerLevelsList,
+            degreeLevelsList,
+            fieldsOfStudyList,
+            broaderCategoriesList
+        });
 
-         console.log(`Found ${matchedJobs.length} matched jobs above threshold.`);
+    } catch (err) {
+        console.error("Error in GET /matches/jobs:", err);
+        next(err);
+    }
+});
 
-         res.render('seeker/matchedJobs', {
-             title: 'Matched Job Postings',
-             jobs: matchedJobs,
-             skillsList, locationsList, jobTypeList, careerLevelsList, degreeLevelsList, fieldsOfStudyList, broaderCategoriesList
-         });
+router.get('/seekers/:jobId', ensureAuthenticated, ensureRecruiter, async (req, res, next) => {
+    try {
+        const jobId = req.params.jobId;
+        const jobPosting = await JobPosting.findById(jobId);
+        if (!jobPosting || jobPosting.recruiter_id.toString() !== req.user.id.toString()) {
+            if(req.flash) req.flash('error_msg', 'Job posting not found or you are not authorized.');
+            return res.redirect('/jobs/my');
+        }
 
-     } catch (err) {
-         console.error("Error in GET /matches/jobs:", err);
-         if(req.flash) req.flash('error_msg', 'Could not load matched jobs.');
-         res.redirect('/dashboard');
-     }
- });
+        const allSeekerProfiles = await JobSeekerProfile.find({}).populate('user_id', 'username email');
+        let matchedSeekers = [];
 
+        for (const seekerProfile of allSeekerProfiles) {
+            if (!seekerProfile || !seekerProfile.skills) {
+                continue;
+            }
+            const score = calculateOverallMatchScore(seekerProfile, jobPosting);
+            if (score > 0.25) {
+                matchedSeekers.push({
+                    ...seekerProfile.toObject(),
+                    user: seekerProfile.user_id ? seekerProfile.user_id.toObject() : { username: 'N/A', email: 'N/A' },
+                    matchScore: score
+                });
+            }
+        }
 
- // --- For Recruiters: View Matched Seekers for a Specific Job ---
- router.get('/seekers/:jobId', ensureAuthenticated, ensureRecruiter, async (req, res) => {
-     const jobId = req.params.jobId;
-     console.log(`GET /matches/seekers/${jobId} - Recruiter viewing matched seekers`);
-     try {
-         const jobPosting = await JobPosting.findById(jobId);
-         if (!jobPosting || jobPosting.recruiter_id.toString() !== req.user.id.toString()) {
-             if(req.flash) req.flash('error_msg', 'Job posting not found or you are not authorized.');
-             return res.redirect('/jobs/my');
-         }
+        matchedSeekers.sort((a, b) => b.matchScore - a.matchScore);
 
-         const allSeekerProfiles = await JobSeekerProfile.find({}).populate('user_id', 'username email'); 
-         const matchedSeekers = [];
+        res.render('recruiter/matchedSeekers', {
+            title: `Matched Seekers for "${jobPosting.jobTitle}"`,
+            activeNavItem: 'myJobs',
+            job: jobPosting.toObject(),
+            seekers: matchedSeekers,
+            skillsList,
+            locationsList,
+            jobTypeList,
+            broaderCategoriesList,
+            degreeLevelsList,
+            fieldsOfStudyList
+        });
 
-         console.log(`Calculating matches for job "${jobPosting.jobTitle}" against ${allSeekerProfiles.length} seekers.`);
+    } catch (err) {
+        console.error(`Error in GET /matches/seekers/:jobId:`, err);
+        next(err);
+    }
+});
 
-         for (const seekerProfile of allSeekerProfiles) {
-             const score = calculateOverallMatchScore(seekerProfile, jobPosting);
-             // console.log(`Seeker: ${seekerProfile.fullName}, Score: ${score}`); 
-             if (score > 0.3) { // Threshold
-                 matchedSeekers.push({ ...seekerProfile.toObject(), user: seekerProfile.user_id, matchScore: score }); 
-             }
-         }
-
-         matchedSeekers.sort((a, b) => b.matchScore - a.matchScore);
-
-         console.log(`Found ${matchedSeekers.length} matched seekers above threshold for job ${jobPosting.jobTitle}.`);
-
-         res.render('recruiter/matchedSeekers', {
-             title: `Matched Seekers for "${jobPosting.jobTitle}"`,
-             job: jobPosting,
-             seekers: matchedSeekers,
-             // Pass lists for potential display needs in seeker snippets
-             skillsList, locationsList, jobTypeList, broaderCategoriesList, degreeLevelsList, fieldsOfStudyList
-         });
-
-     } catch (err) {
-         console.error(`Error in GET /matches/seekers/${jobId}:`, err);
-         if (err.kind === 'ObjectId') {
-            return res.status(404).render('error', { title: 'Not Found', message: 'Job posting ID is invalid.' });
-         }
-         if(req.flash) req.flash('error_msg', 'Could not load matched seekers.');
-         res.redirect('/jobs/my');
-     }
- });
-
- module.exports = router;
+module.exports = router;
