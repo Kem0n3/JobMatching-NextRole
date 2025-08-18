@@ -40,7 +40,7 @@
 
 .btn-edit-profile {
     display: inline-block;
-    padding: 0.55rem 1.5rem;
+    padding: 0.6rem 1.5rem;
     font-size: 0.9rem;
     font-weight: 600;
     text-align: center;
@@ -53,9 +53,10 @@
     color: var(--color-text-on-primary);
 }
 .btn-edit-profile:hover {
-    background-color: var(--color-primary-dark);
+    background-color: var(--color-accent-interactive);
     transform: translateY(-1px);
     box-shadow: 0 7px 10px -5px rgba(37, 99, 235, 0.4);
+    color: white;
 }
 
 .profile-container {

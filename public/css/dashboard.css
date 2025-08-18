@@ -4,7 +4,7 @@
 }
 .dashboard-header {
     margin-bottom: 15px;
-    padding-bottom: 10px;
+    /* padding-bottom: 10px; */
     border-bottom: 1px solid var(--color-border);
 }
 .dashboard-header h1 {
@@ -25,6 +25,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    padding: 0px 5px
 }
 .section-header h2 {
     font-size: 1.5rem;
@@ -47,12 +48,12 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 25px;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
 }
 .stat-card {
     background-color: var(--color-bg-content);
     border-radius: var(--border-radius);
-    padding: 20px;
+    padding: 12px 30px;
     box-shadow: var(--shadow);
     border: 1px solid var(--color-border);
 }
@@ -82,7 +83,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 25px;
-    margin-bottom: 50px;
+    margin-bottom: 0px;
 }
 .job-card {
     background-color: var(--color-bg-content);
@@ -180,12 +181,12 @@
 }
 .btn {
     display: inline-block; padding: 0.75rem 1.5rem; font-size: 0.9rem; font-weight: 600;
-    text-align: center; text-decoration: none; border-radius: var(--border-radius);
+    text-align: center; text-decoration: none; border-radius: var(--border-radius-sm);
     border: 1px solid transparent; cursor: pointer; transition: all 0.2s ease-in-out;
     
 }
 .btn-primary { background-color: var(--color-primary); color: var(--color-text-on-primary); }
-.btn-primary:hover { background-color: var(--color-primary-dark); transform: translateY(-1px); box-shadow: 0 7px 10px -5px rgba(37, 99, 235, 0.4); }
+.btn-primary:hover { background-color: var(--color-accent-interactive); transform: translateY(-1px); box-shadow: 0 7px 10px -5px rgba(37, 99, 235, 0.4); }
 /* --- CHANGE: New subtle style for "Applied" button --- */
 .btn-applied {
     background-color: #e5e7eb; /* A neutral light gray */

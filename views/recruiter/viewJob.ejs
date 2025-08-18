@@ -4,25 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %> at <%= job.companyName %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-bg-page: #F1F6F9; --color-bg-content: #FFFFFF;
-            --color-primary-text: #394867; --color-sidebar-bg: #FFFFFF;
-            --color-sidebar-text: var(--color-primary-text);
-            --color-sidebar-active-text: #14274E; --color-sidebar-active-bg: #DBE2EF;
-            --color-accent-interactive: #3F72AF; --color-accent-action: #F05454;
-            --primary-action-color: var(--color-accent-action); --primary-action-dark: #d94242;
-            --text-color-on-primary: #ffffff; --text-color-base: var(--color-primary-text);
-            --text-color-strong: #14274E; --text-color-subtle: #6c757d;
-            --text-color-inverted: var(--color-primary-text);
-            --text-color-link: var(--color-accent-interactive);
-            --text-color-link-hover: var(--color-accent-action);
-            --background-color-navbar: #FFFFFF; --border-color: #DBE2EF;
-            --border-radius-sm: 6px; --border-radius-md: 10px;
-            --font-family-main: 'Inter', sans-serif;
-            --navbar-height: 65px; --sidebar-width: 270px;
-            --shadow-sm: 0 2px 5px rgba(20, 39, 78, 0.06); --shadow-md: 0 5px 15px rgba(20, 39, 78, 0.08);
+            --color-primary: #2563eb; --color-primary-dark: #1d4ed8; --color-primary-light: #dbeafe;
+            --color-text-strong: #111827; --color-text-base: #374151; --color-text-subtle: #6b7280;
+            --color-text-on-primary: #ffffff; --color-bg-page: #f9fafb; --color-bg-content: #ffffff;
+            --color-border: #e5e7eb; --font-family-main: 'Inter', sans-serif;
+            --border-radius: 0.75rem; --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
     </style>
     <link rel="stylesheet" href="/css/layout.css">
@@ -53,12 +44,12 @@
                             <div class="meta-info">
                                 <% const locObj = locals.locationsList && locals.locationsList.find(l => l.id === job.jobLocation); %>
                                 <span>
-                                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
+                                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                                     <%= locObj ? locObj.text : (job.jobLocation || 'N/A') %>
                                 </span>
                                 <% const jobTypeObj = locals.jobTypeList && jobTypeList.find(jt => jt.id === job.jobType); %>
                                 <span>
-                                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path></svg>
+                                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path><path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path></svg>
                                     <%= jobTypeObj ? jobTypeObj.text : job.jobType %>
                                 </span>
                             </div>
@@ -66,14 +57,14 @@
                         <div class="header-actions">
                             <% if (isAuthenticated && currentUser.role === 'seeker' && job.isActive) { %>
                                 <% if (typeof hasApplied !== 'undefined' && hasApplied) { %>
-                                    <button class="btn-applied" disabled>Applied</button>
+                                    <button class="btn btn-applied" disabled>Applied</button>
                                 <% } else { %>
                                     <form action="/applications/apply/<%= job._id %>" method="POST">
-                                        <button type="submit" class="btn-apply">Apply Now</button>
+                                        <button type="submit" class="btn btn-primary">Apply Now</button>
                                     </form>
                                 <% } %>
                             <% } else if (isOwner) { %>
-                                <a href="/jobs/<%= job._id %>/edit" class="btn-edit">Edit Job</a>
+                                <a href="/jobs/<%= job._id %>/edit" class="btn btn-edit">Edit Job</a>
                             <% } %>
                         </div>
                     </div>
@@ -99,7 +90,7 @@
                                 <% } %>
 
                                 <% if (job.preferredSkills && job.preferredSkills.length > 0) { %>
-                                    <h2>Preferred Skills</h2>
+                                    <h2 style="margin-top: 30px;">Preferred Skills</h2>
                                     <div class="skills-tags-container">
                                         <% job.preferredSkills.forEach(skillId => { %>
                                             <% const skillObj = locals.skillsList && locals.skillsList.find(s => s.id === skillId); %>

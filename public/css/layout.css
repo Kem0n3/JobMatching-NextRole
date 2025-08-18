@@ -1,9 +1,9 @@
 :root {
-    --color-bg-page: #e9f3f7;       
+    --color-bg-page: #eaf0f3;       
     --color-bg-content: #FFFFFF;     
-
-    --color-primary-dark: #14274E;    
-    --color-primary-medium: #394867;  
+    --color-primary: #2d70ee;
+    --color-primary-dark: #2f5881;    
+    --color-primary-medium: #42648b;  
     --color-accent-interactive: #538fe9; 
     --red-accent : #F05454;
     --color-accent-action: #54a7f0;   
@@ -16,6 +16,7 @@
     --color-sidebar-active-text: var(--color-accent-interactive); 
     --color-sidebar-active-indicator: var(--color-accent-interactive); 
     --color-sidebar-border: #EAF0F6; 
+    --color-sidebar-active-bg : #b2bfce;
 
     /* Navbar specific */
     --color-navbar-bg: #FFFFFF;
@@ -86,7 +87,7 @@ body {
 .main-content-area {
     flex-grow: 1; 
     overflow-y: auto; 
-    padding: 15px 35px; 
+    padding: 0px 35px; 
     background-color: var(--color-bg-page);
 }
 

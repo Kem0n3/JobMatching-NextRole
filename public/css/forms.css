@@ -3,7 +3,7 @@
     font-family: Inter, sans-serif;
 }
 .page-header {
-    margin-bottom: 30px;
+    margin-bottom: 15px;
     padding-bottom: 15px;
     border-bottom: 1px solid var(--color-border);
 }
@@ -19,6 +19,7 @@
     color: var(--color-text-subtle);
     margin-top: 4px;
     margin-left: 50px;
+    margin-bottom: 0;
 }
 
 .form-container {
@@ -106,7 +107,7 @@
     transition: all 0.2s ease;
 }
 .form-submit-button:hover {
-    background-color: var(--color-primary-dark);
+    background-color: var(--color-accent-interactive);
     transform: translateY(-1px);
     box-shadow: 0 7px 10px -5px rgba(37, 99, 235, 0.4);
 }
