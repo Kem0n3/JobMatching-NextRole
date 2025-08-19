@@ -12,7 +12,7 @@ const Application = require('./models/Application');
 const JobPosting = require('./models/JobPosting');
 
 const { calculateOverallMatchScore } = require('./services/matchingService');
-const { addSeekerProfileData, calculateProfileCompletionPercentage } = require('./middleware/profileDataMiddleware');
+const { addSeekerProfileData } = require('./middleware/profileDataMiddleware');
 const { ensureAuthenticated } = require('./middleware/authMiddleware');
 
 const authRoutes = require('./routes/auth');
@@ -125,7 +125,7 @@ app.get('/dashboard', ensureAuthenticated, async (req, res, next) => {
 
             const applicationStatusCounts = {};
             const statusOrder = ['Applied', 'Viewed', 'Under Review', 'Interviewing', 'Offered', 'Hired', 'Rejected', 'Withdrawn'];
-            const statusColorsHex = { Applied: '#3F72AF', Viewed: '#FFCA28', UnderReview: '#FFCA28', Interviewing: '#17A2B8', Offered: '#66BB6A', Hired: '#28a745', Rejected: '#F05454', Withdrawn: '#B0BEC5' };
+            const statusColorsHex = { Applied: '#2563eb', Viewed: '#f59e0b', UnderReview: '#f59e0b', Interviewing: '#10b981', Offered: '#8b5cf6', Hired: '#16a34a', Rejected: '#ef4444', Withdrawn: '#6b7280' };
 
             statusOrder.forEach(status => {
                 const count = allMyApps.filter(app => app.status === status).length;
@@ -133,7 +133,7 @@ app.get('/dashboard', ensureAuthenticated, async (req, res, next) => {
                      applicationStatusCounts[status] = {
                         count: count,
                         percentage: allMyApps.length > 0 ? Math.round((count / allMyApps.length) * 100) : 0,
-                        color: statusColorsHex[status] || '#CFD8DC',
+                        color: statusColorsHex[status] || '#9ca3af',
                         label: status
                     };
                 }
@@ -142,6 +142,7 @@ app.get('/dashboard', ensureAuthenticated, async (req, res, next) => {
             res.render('dashboard/seekerDashboard', {
                 ...commonViewData,
                 title: 'Seeker Dashboard',
+                pageCss: 'seeker-dashboard',
                 activeApplicationsCount,
                 offersOrHiredCount,
                 matchedJobsCount,
@@ -154,35 +155,91 @@ app.get('/dashboard', ensureAuthenticated, async (req, res, next) => {
             next(error);
         }
     } else if (req.user.role === 'recruiter') {
-        try {
-            const jobsPostedCountPromise = JobPosting.countDocuments({ recruiter_id: req.user.id });
-            const activeJobsCountPromise = JobPosting.countDocuments({ recruiter_id: req.user.id, isActive: true });
-            const myJobsForAppCount = await JobPosting.find({ recruiter_id: req.user.id }).select('_id');
-            const myJobIds = myJobsForAppCount.map(job => job._id);
-            const totalApplicantsPromise = Application.countDocuments({ job_id: { $in: myJobIds } });
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const newApplicationsTodayPromise = Application.countDocuments({ job_id: { $in: myJobIds }, applicationDate: { $gte: today } });
-            const recentJobsPromise = JobPosting.find({ recruiter_id: req.user.id }).sort({ postedDate: -1 }).limit(5);
+    try {
+        const recruiterId = req.user.id;
 
-            const [jobsPostedCount, activeJobsCount, totalApplicants, newApplicationsToday, recentJobs] = await Promise.all([
-                jobsPostedCountPromise, activeJobsCountPromise, totalApplicantsPromise, newApplicationsTodayPromise, recentJobsPromise
-            ]);
+        const activeJobsCountPromise = JobPosting.countDocuments({ recruiter_id: recruiterId, isActive: true });
+        const myJobs = await JobPosting.find({ recruiter_id: recruiterId }).select('_id');
+        const myJobIds = myJobs.map(job => job._id);
+        const totalApplicantsPromise = Application.countDocuments({ job_id: { $in: myJobIds } });
 
-            res.render('dashboard/recruiterDashboard', {
-                ...commonViewData,
-                title: 'Recruiter Dashboard',
-                jobsPostedCount,
-                activeJobsCount,
-                totalApplicants,
-                newApplicationsToday,
-                recentJobs: recentJobs.map(job => job.toObject())
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const newApplicantsPromise = Application.countDocuments({ job_id: { $in: myJobIds }, applicationDate: { $gte: sevenDaysAgo } });
+
+        const recentJobsPromise = JobPosting.find({ recruiter_id: recruiterId })
+            .sort({ postedDate: -1 })
+            .limit(5);
+
+        // --- Data for Chart: Applicants Over Time (Last 7 Days) ---
+        const applicantsLast7DaysPromise = Application.find({
+            job_id: { $in: myJobIds },
+            applicationDate: { $gte: sevenDaysAgo }
+        }).select('applicationDate');
+
+
+        let [
+            activeJobsCount,
+            totalApplicants,
+            newApplicantsCount,
+            recentJobs,
+            applicantsLast7Days
+        ] = await Promise.all([
+            activeJobsCountPromise,
+            totalApplicantsPromise,
+            newApplicantsPromise,
+            recentJobsPromise,
+            applicantsLast7DaysPromise
+        ]);
+
+        const recentJobsWithAppCounts = [];
+        for (let job of recentJobs) {
+            const totalAppsForJob = await Application.countDocuments({ job_id: job._id });
+            const newAppsForJob = await Application.countDocuments({ job_id: job._id, applicationDate: { $gte: sevenDaysAgo } });
+            recentJobsWithAppCounts.push({
+                ...job.toObject(),
+                totalApplicants: totalAppsForJob,
+                newApplicants: newAppsForJob
             });
-        } catch (error) {
-            console.error("Error loading recruiter dashboard data:", error);
-            next(error);
         }
-    } else {
+
+        // Process data for the line chart
+        const chartData = {
+            labels: [],
+            data: []
+        };
+        const dateCounts = {};
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateString = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); // e.g., "Aug 15"
+            chartData.labels.push(dateString);
+            dateCounts[dateString] = 0;
+        }
+        applicantsLast7Days.forEach(app => {
+            const appDateString = app.applicationDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            if (dateCounts.hasOwnProperty(appDateString)) {
+                dateCounts[appDateString]++;
+            }
+        });
+        chartData.data = Object.values(dateCounts);
+
+
+        res.render('dashboard/recruiterDashboard', {
+            ...commonViewData,
+            title: 'Recruiter Dashboard',
+            pageCss: 'recruiter-dashboard',
+            activeJobsCount,
+            totalApplicants,
+            newApplicantsCount,
+            recentJobs: recentJobsWithAppCounts,
+            chartData
+        });
+    } catch (error) {
+        console.error("Error loading recruiter dashboard data:", error);
+        next(error);
+    }
+} else {
         res.render('dashboard/generalDashboard', {
              ...commonViewData,
              title: 'Dashboard'

@@ -44,10 +44,10 @@ function calculateSkillMatch(seekerSkills, jobRequiredSkills, jobPreferredSkills
         finalSkillScore = requiredMatchScore + preferredBonus;
     }
 
-    return Math.min(1, finalSkillScore); // Cap at 1
+    return Math.min(1, finalSkillScore); 
 }
 
-// --- Component 2: Category Experience Match (Refined with Partial Credit) ---
+//  Component 2: Category Experience Match 
 function calculateExperienceMatch(seekerCategoryExp, jobExpRequirements) {
     if (!seekerCategoryExp) seekerCategoryExp = [];
     if (!jobExpRequirements || jobExpRequirements.length === 0) {
@@ -95,7 +95,7 @@ function calculateEducationMatch(seekerDegree, seekerField, jobMinDegree, jobPre
     const seekerOrdinal = degreeOrder[seekerDegree] !== undefined ? degreeOrder[seekerDegree] : -1;
     const jobOrdinal = degreeOrder[jobMinDegree] !== undefined ? degreeOrder[jobMinDegree] : -1;
 
-    if (seekerOrdinal >= jobOrdinal && jobOrdinal !== -1) { // Ensure job has a valid degree requirement
+    if (seekerOrdinal >= jobOrdinal && jobOrdinal !== -1) { 
         degreeScore = 1.0;
     } else if (jobOrdinal > 0 && seekerOrdinal === jobOrdinal - 1) {
         degreeScore = 0.5;

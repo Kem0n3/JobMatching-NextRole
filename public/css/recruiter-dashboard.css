@@ -1,0 +1,150 @@
+/* public/css/recruiter-dashboard.css */
+
+.dashboard-header {
+    margin-bottom: 20px;
+    padding-bottom: 0px;
+    border-bottom: 1px solid var(--color-border);
+}
+.dashboard-header h1 {
+    font-size: 1.875rem;
+    color: var(--color-text-strong);
+    font-weight: 700;
+    margin: 0;
+}
+.dashboard-header p {
+    font-size: 1rem;
+    color: var(--color-text-subtle);
+    margin-top: 4px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.section-header h2 {
+    font-size: 1.5rem;
+    color: var(--color-text-strong);
+    font-weight: 600;
+    margin: 0;
+}
+.btn {
+    display: inline-block; padding: 0.6rem 0.9rem; font-size: 0.9rem; font-weight: 600;
+    text-align: center; text-decoration: none; border-radius: var(--border-radius-sm);
+    border: 1px solid transparent; cursor: pointer; transition: all 0.2s ease-in-out;
+}
+.btn-primary { background-color: var(--color-primary); color: var(--color-text-on-primary); }
+.btn-primary:hover { background-color: var(--color-primary-dark); color: var(--color-text-on-primary);}
+
+/* --- Statistic Cards --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+.stat-card {
+    background-color: var(--color-bg-content);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    padding-left: 25px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+}
+.stat-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.stat-card__title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-subtle);
+}
+.stat-card__icon {
+    color: var(--color-primary);
+}
+.stat-card__value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--color-text-strong);
+    line-height: 1;
+}
+
+/* --- Recruiter Job Postings List --- */
+.job-postings-list-container {
+    background-color: var(--color-bg-content);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+    margin-bottom: 40px;
+}
+.job-posting-item {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: 16px 8px;
+    border-bottom: 1px solid var(--color-border);
+    gap: 15px;
+}
+.job-posting-item:last-child {
+    border-bottom: none;
+}
+.job-posting-item__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-strong);
+    text-decoration: none;
+}
+.job-posting-item__title:hover {
+    color: var(--color-primary);
+}
+.job-posting-item__status {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.status-active { color: #059669; }
+.status-inactive { color: var(--color-text-subtle); }
+.job-posting-item__apps {
+    font-size: 0.9rem;
+    color: var(--color-text-base);
+}
+.job-posting-item__apps .new-apps {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+.job-posting-item__actions {
+    text-align: right;
+}
+.btn-view-details {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    background-color: var(--color-bg-page);
+    color: var(--color-text-base);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.btn-view-details:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* --- Chart Container --- */
+.chart-container-wrapper {
+    background-color: var(--color-bg-content);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+}
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}

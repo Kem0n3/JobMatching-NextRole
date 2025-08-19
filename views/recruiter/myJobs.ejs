@@ -1,31 +1,103 @@
-<!-- views/recruiter/myJobs.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- ... head content ... -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #2563eb; --color-primary-dark: #1d4ed8; --color-primary-light: #dbeafe;
+            --color-text-strong: #111827; --color-text-base: #374151; --color-text-subtle: #6b7280;
+            --color-text-on-primary: #ffffff; --color-bg-page: #f9fafb; --color-bg-content: #ffffff;
+            --color-border: #e5e7eb; --font-family-main: 'Inter', sans-serif;
+            --border-radius: 0.75rem; --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/my-jobs.css">
 </head>
 <body>
-    <div class="container">
-        <%- include('../partials/nav') %>
-        <h1><%= title %></h1>
+    <div class="app-shell">
+        <aside class="sidebar-area">
+            <%- include('../partials/sidebar') %>
+        </aside>
 
-        <a href="/jobs/new" style="display:inline-block; margin-bottom:20px; padding:10px; background-color:#28a745; color:white; text-decoration:none; border-radius:4px;">Post New Job</a>
+        <div class="main-wrapper">
+            <header class="navbar-area">
+                <%- include('../partials/navbar') %>
+            </header>
 
-        <% if (jobs && jobs.length > 0) { %>
-            <% jobs.forEach(function(job) { %>
-                <div class="job-listing">
-                    <h3><a href="/jobs/<%= job._id %>"><%= job.jobTitle %></a> at <%= job.companyName %></h3>
-                    <p><strong>Status:</strong> <%= job.isActive ? 'Active' : 'Inactive' %></p>
-                    <p><strong>Posted:</strong> <%= new Date(job.postedDate).toLocaleDateString() %></p>
-                    <a href="/jobs/<%= job._id %>/edit">Edit</a>
-                    <a href="/jobs/<%= job._id %>">View Publicly</a>
-                    <a href="/applications/job/<%= job._id %>/applicants">View Applicants</a>
-                    <a href="/matches/seekers/<%= job._id %>">View Matched Seekers</a> <!-- THIS IS THE CORRECT PLACE -->
+            <main class="main-content-area">
+                <div class="page-header-actions">
+                    <div class="header-info">
+                        <h1>My Job Postings</h1>
+                        <p>Manage your active and inactive job listings.</p>
+                    </div>
+                    <div class="header-actions">
+                        <a href="/jobs/new" class="btn btn-primary">Post a New Job</a>
+                    </div>
                 </div>
-            <% }); %>
-        <% } else { %>
-            <p>You have not posted any jobs yet.</p>
-        <% } %>
+
+                <div class="job-postings-list-container">
+                    <% if (jobs && jobs.length > 0) { %>
+                        <table class="job-posting-table">
+                            <thead>
+                                <tr class="job-posting-list-header">
+                                    <th class="header-cell" style="width: 34%;">Job Title</th>
+                                    <th class="header-cell" style="width: 13%;">Status</th>
+                                    <th class="header-cell" style="width: 15%;">Applicants</th>
+                                    <th class="header-cell" style="width: 15%;">Posted On</th>
+                                    <th class="header-cell" style="width: 23%;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% jobs.forEach(function(job) { %>
+                                    <tr class="job-posting-item">
+                                        <td class="job-cell job-info">
+                                            <div class="company-logo-placeholder">
+                                                <%= job.companyName ? job.companyName.charAt(0).toUpperCase() : 'C' %>
+                                            </div>
+                                            <div class="job-title-company">
+                                                <a href="/jobs/<%= job._id %>" class="job-posting-item__title"><%= job.jobTitle %></a>
+                                                <p class="job-posting-item__company"><%= job.companyName %></p>
+                                            </div>
+                                        </td>
+                                        <td class="job-cell job-status">
+                                            <span class="status-pill <%= job.isActive ? 'status-active' : 'status-inactive' %>">
+                                                <%= job.isActive ? 'Active' : 'Inactive' %>
+                                            </span>
+                                        </td>
+                                        <td class="job-cell job-apps">
+                                            <a href="/applications/job/<%= job._id %>/applicants" class="applicant-link">
+                                                <%= typeof job.applicantCount !== 'undefined' ? job.applicantCount : 'N/A' %> Total
+                                            </a>
+                                        </td>
+                                        <td class="job-cell job-date">
+                                            <%= new Date(job.postedDate).toLocaleDateString() %>
+                                        </td>
+                                        <td class="job-cell job-actions">
+                                            <a href="/matches/seekers/<%= job._id %>" class="action-link">Matches</a>
+                                            <a href="/applications/job/<%= job._id %>/applicants" class="action-link">Applicants</a>
+                                            <a href="/jobs/<%= job._id %>/edit" class="action-link">Edit</a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    <% } else { %>
+                        <div class="no-results-card-inner">
+                            <p>You have not posted any jobs yet.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </main>
+        </div>
+        <script src="/js/main.js"></script>
     </div>
 </body>
 </html>

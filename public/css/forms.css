@@ -12,19 +12,20 @@
     color: var(--color-text-strong);
     font-weight: 700;
     margin: 0;
-    margin-left: 50px;
+    /* margin-left: 10px; */
 }
 .page-header p {
     font-size: 1rem;
     color: var(--color-text-subtle);
     margin-top: 4px;
-    margin-left: 50px;
+    /* margin-left: 10px; */
     margin-bottom: 0;
 }
 
 .form-container {
-    max-width: 950px;
+    max-width: 100%;
     margin: 0 auto;
+    margin-bottom: 20px;
 }
 
 .form-section {
@@ -99,18 +100,15 @@
     background-color: var(--color-primary);
     color: var(--color-text-on-primary);
     border: none;
-    padding: 12px 25px;
+    margin-left: 7px;
+    padding: 12px 28px;
     border-radius: var(--border-radius-sm);
     cursor: pointer;
     font-size: 1rem;
     font-weight: 600;
     transition: all 0.2s ease;
 }
-.form-submit-button:hover {
-    background-color: var(--color-accent-interactive);
-    transform: translateY(-1px);
-    box-shadow: 0 7px 10px -5px rgba(37, 99, 235, 0.4);
-}
+.form-submit-button:hover { background-color: var(--color-primary-dark); color: var(--color-text-on-primary);}
 
 .checkbox-group {
     display: flex;
@@ -210,7 +208,7 @@
     order: 1;
     width: 100%;
     padding: 0 !important;
-    height: 45px;
+    height: 32px;
 }
 .select2-container--default .select2-search--inline .select2-search__field {
     width: 100% !important;
@@ -220,6 +218,7 @@
     background-color: transparent;
     font-size: 1rem;
     font-family: var(--font-family-main);
+    height: 26px;
 }
 .select2-container--default .select2-search--inline .select2-search__field:focus {
     outline: none;

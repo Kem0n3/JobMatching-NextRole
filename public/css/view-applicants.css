@@ -1,0 +1,111 @@
+/* public/css/view-applicants.css */
+
+.page-header {
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--color-border);
+}
+.page-header h1 {
+    font-size: 1.875rem;
+    color: var(--color-text-strong);
+    font-weight: 700;
+    margin: 0;
+}
+.page-header p {
+    font-size: 1rem;
+    color: var(--color-text-subtle);
+    margin-top: 4px;
+}
+.page-header p strong {
+    color: var(--color-text-base);
+    font-weight: 600;
+}
+
+.applicants-container {
+    display: grid;
+    gap: 16px;
+}
+
+.applicant-card {
+    background-color: var(--color-bg-content);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 20px 24px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+.applicant-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 10px -2px rgba(0,0,0,0.08);
+}
+
+.applicant-avatar {
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.applicant-info {
+    flex-grow: 1;
+}
+.applicant-info h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-strong);
+    margin: 0 0 2px 0;
+}
+.applicant-info .applicant-email {
+    font-size: 0.9rem;
+    color: var(--color-text-subtle);
+    margin: 0;
+}
+
+.applicant-meta {
+    flex-shrink: 0;
+    min-width: 150px;
+    text-align: right;
+}
+.applicant-meta .application-date {
+    font-size: 0.8rem;
+    color: var(--color-text-subtle);
+    margin-bottom: 8px;
+}
+
+.status-update-form select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    font-size: 0.9rem;
+    font-family: var(--font-family-main);
+    color: var(--color-text-base);
+    background-color: var(--color-bg-page);
+    cursor: pointer;
+}
+.status-update-form select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.status-update-form button {
+    display: none;
+}
+
+.no-results-card {
+    text-align: center;
+    color: var(--color-text-subtle);
+    border: 1px dashed var(--color-border);
+    box-shadow: none;
+}

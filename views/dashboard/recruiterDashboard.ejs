@@ -1,13 +1,115 @@
 <!DOCTYPE html>
-<html>
-<head><title><%= title %></title> <style>body{font-family:sans-serif; margin:20px;}</style></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #2563eb; --color-primary-dark: #1d4ed8; --color-primary-light: #dbeafe;
+            --color-text-strong: #111827; --color-text-base: #374151; --color-text-subtle: #6b7280;
+            --color-text-on-primary: #ffffff; --color-bg-page: #f9fafb; --color-bg-content: #ffffff;
+            --color-border: #e5e7eb; --font-family-main: 'Inter', sans-serif;
+            --border-radius: 0.75rem; --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/recruiter-dashboard.css">
+</head>
 <body>
-    <%- include('../partials/nav') %>
-    <h1>Recruiter Dashboard</h1>
-    <p>Welcome, <%= currentUser.username %>!</p>
-    <ul>
-        <li><a href="/jobs/new">Post a New Job</a></li>
-        <li><a href="/jobs/my">View My Job Postings</a></li>
-    </ul>
+    <div class="app-shell">
+        <aside class="sidebar-area">
+            <%- include('../partials/sidebar') %>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="navbar-area">
+                <%- include('../partials/navbar') %>
+            </header>
+
+            <main class="main-content-area">
+                <div class="dashboard-header">
+                    <h1>Dashboard</h1>
+                    <% if (locals.displayNameForNav) { %>
+                        <p>Welcome back, <%= locals.displayNameForNav.split(' ')[0] %>! Here's your recruitment overview.</p>
+                    <% } %>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card__header">
+                            <span class="stat-card__title">Active Jobs</span>
+                        </div>
+                        <div class="stat-card__value"><%= locals.activeJobsCount || 0 %></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__header">
+                            <span class="stat-card__title">Total Applications</span>
+                        </div>
+                        <div class="stat-card__value"><%= locals.totalApplicants || 0 %></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__header">
+                            <span class="stat-card__title">New Applicants (7d)</span>
+                        </div>
+                        <div class="stat-card__value"><%= locals.newApplicantsCount || 0 %></div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>My Job Postings</h2>
+                    <a href="/jobs/new" class="btn btn-primary">Post a New Job</a>
+                </div>
+                <div class="job-postings-list-container">
+                    <% if (locals.recentJobs && locals.recentJobs.length > 0) { %>
+                        <% recentJobs.forEach(function(job) { %>
+                            <div class="job-posting-item">
+                                <a href="/jobs/<%= job._id %>" class="job-posting-item__title"><%= job.jobTitle %></a>
+                                <span class="job-posting-item__status <%= job.isActive ? 'status-active' : 'status-inactive' %>">
+                                    <%= job.isActive ? 'Active' : 'Inactive' %>
+                                </span>
+                                <span class="job-posting-item__apps">
+                                    <%= job.totalApplicants %> Total <% if (job.newApplicants > 0) { %> | <span class="new-apps"><%= job.newApplicants %> New</span> <% } %>
+                                </span>
+                                <div class="job-posting-item__actions">
+                                    <a href="/jobs/<%= job._id %>" class="btn-view-details">View Details</a>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p style="padding: 10px 8px; color: var(--color-text-subtle);">You have not posted any jobs yet.</p>
+                    <% } %>
+                </div>
+
+                <div class="section-header" style="margin-top: 40px;">
+                    <h2>Applicants Over Time (Last 7 Days)</h2>
+                </div>
+                <div class="chart-container-wrapper">
+                    <% if (locals.chartData && locals.chartData.labels.length > 0) { %>
+                        <div class="chart-container">
+                            <canvas id="applicantsOverTimeChart"></canvas>
+                        </div>
+                    <% } else { %>
+                        <p style="text-align: center; color: var(--color-text-subtle);">Receive applications to see your recruitment activity here.</p>
+                    <% } %>
+                </div>
+
+            </main>
+        </div>
+
+        <% if (locals.chartData) { %>
+        <script id="recruiterChartData" type="application/json">
+            <%- JSON.stringify(locals.chartData) %>
+        </script>
+        <% } %>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="/js/main.js"></script>
+        <script src="/js/dashboardCharts.js"></script>
+    </div>
 </body>
 </html>

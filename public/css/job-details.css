@@ -100,9 +100,7 @@
 }
 
 .btn-primary:hover {
-    background-color: var(--color-accent-interactive);
-    transform: translateY(-1px);
-    box-shadow: 0 7px 10px -5px rgba(131, 159, 219, 0.4);
+    .btn-primary:hover { background-color: var(--color-primary-dark); color: var(--color-text-on-primary);}
 }
 
 

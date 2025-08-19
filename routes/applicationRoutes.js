@@ -4,7 +4,7 @@ const Application = require('../models/Application');
 const JobPosting = require('../models/JobPosting');
 const JobSeekerProfile = require('../models/JobSeekerProfile');
 const { ensureAuthenticated, ensureSeeker, ensureRecruiter } = require('../middleware/authMiddleware');
-const { skillsList, degreeLevelsList, fieldsOfStudyList, locationsList } = require('../config/selectData');
+const { skillsList, degreeLevelsList, fieldsOfStudyList, locationsList, broaderCategoriesList } = require('../config/selectData');
 
 router.post('/apply/:jobId', ensureAuthenticated, ensureSeeker, async (req, res) => {
     const jobId = req.params.jobId;
@@ -60,7 +60,7 @@ router.get('/job/:jobId/applicants', ensureAuthenticated, ensureRecruiter, async
         for (let app of rawApplications) {
             if (app.seeker_user_id && app.seeker_user_id._id) {
                 const seekerProfile = await JobSeekerProfile.findOne({ user_id: app.seeker_user_id._id })
-                                          .select('fullName skills degreeLevel fieldOfStudy categoryExperience');
+                                          .select('fullName');
                 applications.push({
                     ...app.toObject(),
                     seekerProfile: seekerProfile ? seekerProfile.toObject() : null
@@ -74,11 +74,7 @@ router.get('/job/:jobId/applicants', ensureAuthenticated, ensureRecruiter, async
             title: `Applicants for "${job.jobTitle}"`,
             activeNavItem: 'myJobs',
             job: job.toObject(),
-            applications,
-            skillsList,
-            degreeLevelsList,
-            fieldsOfStudyList,
-            broaderCategoriesList: require('../config/selectData').broaderCategoriesList
+            applications
         });
 
     } catch (err) {
