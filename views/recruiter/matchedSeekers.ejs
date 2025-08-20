@@ -35,7 +35,7 @@
             <main class="main-content-area">
                 <div class="page-header">
                     <h1>Matched Candidates</h1>
-                    <p>Showing top candidates for your job posting: <strong><%= job.jobTitle %></strong></p>
+                    <p>Showing top candidates for your job posting: <strong><a href="/jobs/<%= job._id %>"><%= job.jobTitle %></a></strong></p>
                 </div>
 
                 <% if (seekers && seekers.length > 0) { %>
@@ -48,7 +48,9 @@
                                         <%= seeker.fullName ? seeker.fullName.charAt(0).toUpperCase() : 'S' %>
                                     </div>
                                     <div class="seeker-card__info">
-                                        <h3 class="seeker-card__name"><%= seeker.fullName %></h3>
+                                        <a href="/profile/seeker/<%= seeker.user_id._id %>" class="seeker-card__name-link">
+                                            <h3 class="seeker-card__name"><%= seeker.fullName %></h3>
+                                        </a>
                                         <% const degree = locals.degreeLevelsList && degreeLevelsList.find(d => d.id === seeker.degreeLevel); %>
                                         <% const field = locals.fieldsOfStudyList && fieldsOfStudyList.find(f => f.id === seeker.fieldOfStudy); %>
                                         <p class="seeker-card__education">
@@ -73,7 +75,7 @@
                                     <% } %>
                                 </div>
                                 <div class="seeker-card__footer">
-                                    <a href="#" class="btn btn-secondary">View Full Profile</a>
+                                    <a href="/profile/seeker/<%= seeker.user_id._id %>" class="btn btn-secondary">View Full Profile</a>
                                 </div>
                             </div>
                         <% }); %>
