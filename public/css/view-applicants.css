@@ -42,6 +42,13 @@
     box-shadow: 0 4px 10px -2px rgba(0,0,0,0.08);
 }
 
+.applicant-name-link {
+    text-decoration: none;
+}
+.applicant-name-link:hover h3 {
+    color: var(--color-primary);
+}
+
 .applicant-avatar {
     width: 48px;
     height: 48px;

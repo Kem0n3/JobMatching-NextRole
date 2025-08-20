@@ -2,11 +2,14 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const JobSeekerProfile = require('../models/JobSeekerProfile');
-const { ensureAuthenticated, ensureSeeker } = require('../middleware/authMiddleware');
+const User = require('../models/User'); 
+const { ensureAuthenticated, ensureSeeker, ensureRecruiter } = require('../middleware/authMiddleware');
 const {
     skillsList, degreeLevelsList, fieldsOfStudyList,
     locationsList, broaderCategoriesList, jobTypeList
 } = require('../config/selectData');
+
+// --- Routes for Seekers Managing Their Own Profile ---
 
 router.get('/form', ensureAuthenticated, ensureSeeker, async (req, res, next) => {
     try {
@@ -15,7 +18,6 @@ router.get('/form', ensureAuthenticated, ensureSeeker, async (req, res, next) =>
         if (profile && (!profile.categoryExperience || profile.categoryExperience.length === 0)) {
              profileData.categoryExperience = [{}];
         }
-
         res.render('seeker/profileForm', {
             title: profile ? 'Edit Profile' : 'Create Profile',
             activeNavItem: 'profileSetup',
@@ -40,12 +42,12 @@ router.post('/', ensureAuthenticated, ensureSeeker, async (req, res, next) => {
 
     const errors = [];
     if (!fullName || fullName.trim() === '') errors.push({ msg: 'Full name is required.' });
-    if (!skills || (Array.isArray(skills) && skills.length === 0) || (typeof skills === 'string' && !skills)) {
+    if (!skills || (Array.isArray(skills) && skills.length === 0)) {
         errors.push({ msg: 'At least one skill is required.' });
     }
     if (!degreeLevel || degreeLevel === '') errors.push({ msg: 'Degree level is required.' });
     if (!fieldOfStudy || fieldOfStudy === '') errors.push({ msg: 'Field of study is required.' });
-    if (!desiredJobTypes || (Array.isArray(desiredJobTypes) && desiredJobTypes.length === 0) || (typeof desiredJobTypes === 'string' && !desiredJobTypes)) {
+    if (!desiredJobTypes || (Array.isArray(desiredJobTypes) && desiredJobTypes.length === 0)) {
         errors.push({ msg: 'At least one desired job type is required.' });
     }
 
@@ -142,6 +144,9 @@ router.get('/me', ensureAuthenticated, ensureSeeker, async (req, res, next) => {
             title: 'My Profile',
             activeNavItem: 'viewProfile',
             profileData: profile.toObject(),
+            // Pass the currently logged-in user object for display purposes
+            profileOwner: req.user.toObject(),
+            isRecruiterView: false, // Flag that this is the seeker's own view
             skillsList,
             degreeLevelsList,
             fieldsOfStudyList,
@@ -154,5 +159,41 @@ router.get('/me', ensureAuthenticated, ensureSeeker, async (req, res, next) => {
         next(err);
     }
 });
+
+
+// --- NEW Route for Recruiters to View a Seeker's Profile ---
+router.get('/seeker/:userId', ensureAuthenticated, ensureRecruiter, async (req, res, next) => {
+    const seekerUserId = req.params.userId;
+    if (!mongoose.Types.ObjectId.isValid(seekerUserId)) {
+        return res.status(404).render('error', { title: 'Not Found', message: 'Seeker ID is invalid.' });
+    }
+
+    try {
+        const profile = await JobSeekerProfile.findOne({ user_id: seekerUserId });
+        const seekerUser = await User.findById(seekerUserId).select('email'); 
+
+        if (!profile || !seekerUser) {
+            return res.status(404).render('error', { title: 'Not Found', message: 'Seeker profile not found.' });
+        }
+
+        res.render('seeker/viewProfile', {
+            title: `${profile.fullName}'s Profile`,
+            activeNavItem: 'browseSeekers', 
+            profileData: profile.toObject(),
+            profileOwner: seekerUser.toObject(), // Pass the seeker's user object
+            isRecruiterView: true, // Flag that this is a recruiter's view
+            skillsList,
+            degreeLevelsList,
+            fieldsOfStudyList,
+            locationsList,
+            broaderCategoriesList,
+            jobTypeList
+        });
+    } catch (err) {
+        console.error(`Error fetching seeker profile for recruiter view:`, err);
+        next(err);
+    }
+});
+
 
 module.exports = router;

@@ -1,22 +1,5 @@
 /* public/css/profile.css */
 
-.page-header {
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--color-border);
-}
-.page-header h1 {
-    font-size: 1.875rem;
-    color: var(--color-text-strong);
-    font-weight: 700;
-    margin: 0;
-}
-.page-header p {
-    font-size: 1rem;
-    color: var(--color-text-subtle);
-    margin-top: 4px;
-}
-
 .profile-header {
     display: flex;
     justify-content: space-between;
@@ -24,6 +7,8 @@
     flex-wrap: wrap;
     gap: 15px;
     margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .profile-header-info h1 {
@@ -40,12 +25,12 @@
 
 .btn-edit-profile {
     display: inline-block;
-    padding: 0.6rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     font-size: 0.9rem;
     font-weight: 600;
     text-align: center;
     text-decoration: none;
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--border-radius);
     border: 1px solid transparent;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
@@ -53,16 +38,14 @@
     color: var(--color-text-on-primary);
 }
 .btn-edit-profile:hover {
-    background-color: var(--color-accent-interactive);
+    background-color: var(--color-primary-dark);
     transform: translateY(-1px);
     box-shadow: 0 7px 10px -5px rgba(37, 99, 235, 0.4);
-    color: white;
 }
 
 .profile-container {
-    max-width: 950px;
+    max-width: 100%;
     margin: 0 auto;
-    margin-bottom: 30px;
 }
 
 .profile-card {
@@ -101,7 +84,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 0;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--border-color);
 }
 .experience-list li:last-child {
     border-bottom: none;
@@ -118,22 +101,12 @@
     flex-shrink: 0;
 }
 
-.skills-tags-container{
+.skills-tags-container {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
-
-.preferences-tags-container {
-    /* border: 2px solid chartreuse; */
-    margin-left: auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(50px, auto)); 
-    gap: 2px; 
-    width: 100px;
-}
-
-.skill-tag, .preference-tag {
+.skill-tag {
     background-color: var(--color-primary-light);
     color: var(--color-primary);
     font-size: 0.75rem;
@@ -163,20 +136,21 @@
     color: var(--color-text-subtle);
     font-weight: 500;
     flex-shrink: 0;
-    
+    width: 180px;
 }
 .detail-value {
-    font-size: 0.95em;
+    font-size: 1em;
     color: var(--color-text-base);
     font-weight: 600;
     text-align: right;
     flex-grow: 1;
-    
 }
+
 
 .no-data-message {
     font-style: italic;
-    color: var(--color-text-subtle);
+    color: var(--text-color-subtle);
+    font-weight: 500; 
 }
 
 .no-profile-card {

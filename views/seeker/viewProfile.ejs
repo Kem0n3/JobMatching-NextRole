@@ -38,10 +38,12 @@
                         <div class="profile-header">
                             <div class="profile-header-info">
                                 <h1><%= profileData.fullName %></h1>
-                                <p class="profile-email"><%= currentUser.email %></p>
+                                <p class="profile-email"><%= profileOwner.email %></p>
                             </div>
                             <div class="profile-header-actions">
-                                <a href="/profile/form" class="btn-edit-profile">Edit Profile</a>
+                                <% if (!isRecruiterView) { %>
+                                    <a href="/profile/form" class="btn-edit-profile">Edit Profile</a>
+                                <% } %>
                             </div>
                         </div>
 
@@ -98,33 +100,29 @@
                                 </li>
                                 <li>
                                     <span class="detail-label">Desired Job Types</span>
-                                    <div class="detail-value">
+                                    <span class="detail-value">
                                         <% if (profileData.desiredJobTypes && profileData.desiredJobTypes.length > 0) { %>
-                                            <div class="preferences-tags-container">
-                                                <% profileData.desiredJobTypes.forEach(typeId => { %>
-                                                    <% const typeObj = locals.jobTypeList && jobTypeList.find(t => t.id === typeId); %>
-                                                    <span class="detail-value"><%= typeObj ? typeObj.text : typeId %></span>
-                                                <% }); %>
-                                            </div>
+                                            <%= profileData.desiredJobTypes.map(typeId => {
+                                                const typeObj = locals.jobTypeList && locals.jobTypeList.find(t => t.id === typeId);
+                                                return typeObj ? typeObj.text : typeId;
+                                            }).join(', ') %>
                                         <% } else { %>
                                             <span class="no-data-message">Not specified.</span>
                                         <% } %>
-                                    </div>
+                                    </span>
                                 </li>
                                 <li>
                                     <span class="detail-label">Preferred Locations</span>
-                                    <div class="detail-value">
+                                    <span class="detail-value">
                                         <% if (profileData.preferredLocations && profileData.preferredLocations.length > 0) { %>
-                                            <div class="preferences-tags-container">
-                                                <% profileData.preferredLocations.forEach(locId => { %>
-                                                    <% const locObj = locals.locationsList && locals.locationsList.find(l => l.id === locId); %>
-                                                    <span class="detail-value"><%= locObj ? locObj.text : locId %></span>
-                                                <% }); %>
-                                            </div>
+                                            <%= profileData.preferredLocations.map(locId => {
+                                                const locObj = locals.locationsList && locals.locationsList.find(l => l.id === locId);
+                                                return locObj ? locObj.text : locId;
+                                            }).join(', ') %>
                                         <% } else { %>
                                             <span class="no-data-message">Not specified.</span>
                                         <% } %>
-                                    </div>
+                                    </span>
                                 </li>
                                 <li>
                                     <span class="detail-label">Willing to Work Remotely</span>

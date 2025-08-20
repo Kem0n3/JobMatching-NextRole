@@ -60,6 +60,7 @@
     /* background-color: var(--color-sidebar-active-bg); */
     background-color: var(--color-sidebar-active-bg);
     color: var(--color-sidebar-bg);
+    /* color: white; */
     font-weight: 600;
 }
 
@@ -106,5 +107,4 @@
     background-color: transparent;
     color: var(--color-primary-text);
     border: 1px solid var(--border-color);
-
 }

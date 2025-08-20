@@ -47,7 +47,9 @@
                                         <%= app.seekerProfile.fullName ? app.seekerProfile.fullName.charAt(0).toUpperCase() : 'S' %>
                                     </div>
                                     <div class="applicant-info">
-                                        <h3><%= app.seekerProfile.fullName %></h3>
+                                        <a href="/profile/seeker/<%= app.seeker_user_id._id %>" class="applicant-name-link">
+                                            <h3><%= app.seekerProfile.fullName %></h3>
+                                        </a>
                                         <p class="applicant-email"><%= app.seeker_user_id.email %></p>
                                     </div>
                                     <div class="applicant-meta">
