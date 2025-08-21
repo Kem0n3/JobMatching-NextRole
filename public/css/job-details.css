@@ -62,7 +62,7 @@
     width: 16px;
     height: 16px;
     margin-right: 8px;
-    stroke: currentColor;
+    stroke: var(--text-color-subtle);
     stroke-width: 2;
     fill: none;
 }
