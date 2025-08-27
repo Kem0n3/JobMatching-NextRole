@@ -46,6 +46,7 @@
 .profile-container {
     max-width: 100%;
     margin: 0 auto;
+    margin-bottom: 25px;
 }
 
 .profile-card {

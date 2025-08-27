@@ -1,44 +1,79 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Register</title>
-    </head>
-    <body>
-        <h1>Register</h1>
-        <% if (typeof errors != 'undefined' && errors.length > 0) { %>
-        <ul>
-        <% errors.forEach(function(error) { %>
-        <li><%= error.msg %></li>
-        <% }); %>
-        </ul>
-        <% } %>
-        <form action="/auth/register" method="POST">
-            <div>
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" value="<%= typeof username != 'undefined' ? username : '' %>" required>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - NextRole</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #2563eb; --color-primary-dark: #1d4ed8; --color-primary-light: #dbeafe;
+            --color-text-strong: #111827; --color-text-base: #374151; --color-text-subtle: #6b7280;
+            --color-text-on-primary: #ffffff; --color-bg-page: #f9fafb; --color-bg-content: #ffffff;
+            --color-border: #e5e7eb; --font-family-main: 'Inter', sans-serif;
+            --border-radius: 0.75rem; --border-radius-sm: 0.5rem; --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body class="auth-page">
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <a href="/" class="auth-logo">NextRole</a>
+        </div>
+
+        <div class="auth-card">
+            <div class="auth-card-header">
+                <h1>Create an Account</h1>
+                <p>Join our platform to find your next role.</p>
             </div>
-            <div>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="<%= typeof email != 'undefined' ? email : '' %>" required>
+
+            <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                <div class="error-message">
+                    <ul>
+                        <% errors.forEach(function(error) { %>
+                            <li><%= error.msg %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <form action="/auth/register" method="POST">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" value="<%= typeof username != 'undefined' ? username : '' %>" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="<%= typeof email != 'undefined' ? email : '' %>" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="password2">Confirm Password</label>
+                    <input type="password" id="password2" name="password2" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">I am a...</label>
+                    <select id="role" name="role" class="form-control" required>
+                        <option value="" disabled <%= typeof role == 'undefined' ? 'selected' : '' %>>-- Select your role --</option>
+                        <option value="seeker" <%= (typeof role != 'undefined' && role === 'seeker') ? 'selected' : '' %>>Job Seeker</option>
+                        <option value="recruiter" <%= (typeof role != 'undefined' && role === 'recruiter') ? 'selected' : '' %>>Recruiter</option>
+                    </select>
+                </div>
+                <button type="submit" class="auth-button">Sign Up</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="/auth/login">Sign in</a></p>
             </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <div>
-                <label for="password2">Confirm Password:</label>
-                <input type="password" id="password2" name="password2" required>
-            </div>
-            <div>
-            <label for="role">Role:</label>
-            <select id="role" name="role" required>
-                <option value="">--Select Role--</option>
-                <option value="seeker" <%= (typeof role != 'undefined' && role === 'seeker') ? 'selected' : '' %>>Job Seeker</option>
-                <option value="recruiter" <%= (typeof role != 'undefined' && role === 'recruiter') ? 'selected' : '' %>>Recruiter</option>
-            </select>
-            </div>
-            <button type="submit">Register</button>
-        </form>
-        <p>Have an account? <a href="/auth/login">Login</a></p>
-    </body>
- </html>
+        </div>
+    </div>
+
+</body>
+</html>

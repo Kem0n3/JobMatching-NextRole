@@ -1,19 +1,66 @@
 <!DOCTYPE html>
-<html>
-    <head><title>Login</title></head>
-    <body>
-        <h1>Login</h1>
-        <form action="/auth/login" method="POST">
-        <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - NextRole</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #2563eb; --color-primary-dark: #1d4ed8; --color-primary-light: #dbeafe;
+            --color-text-strong: #111827; --color-text-base: #374151; --color-text-subtle: #6b7280;
+            --color-text-on-primary: #ffffff; --color-bg-page: #f9fafb; --color-bg-content: #ffffff;
+            --color-border: #e5e7eb; --font-family-main: 'Inter', sans-serif;
+            --border-radius: 0.75rem; --border-radius-sm: 0.5rem; --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body class="auth-page">
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <a href="/" class="auth-logo">NextRole</a>
         </div>
-        <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+
+        <div class="auth-card">
+            <div class="auth-card-header">
+                <h1>Welcome Back!</h1>
+                <p>Please enter your details to sign in.</p>
+            </div>
+
+            <%# This block will display error messages from Passport's failureFlash %>
+            <% if (locals.error && locals.error.length > 0) { %>
+                <div class="error-message">
+                    <%= error %>
+                </div>
+            <% } %>
+            <%# This block is for general success messages, e.g., after registering %>
+            <% if (locals.success_msg && locals.success_msg.length > 0) { %>
+                <div class="success-message">
+                    <%= success_msg %>
+                </div>
+            <% } %>
+
+            <form action="/auth/login" method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="auth-button">Sign In</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="/auth/register">Sign up</a></p>
+            </div>
         </div>
-        <button type="submit">Login</button>
-        </form>
-        <p>No account? <a href="/auth/register">Register</a></p>
-    </body>
+    </div>
+
+</body>
 </html>
