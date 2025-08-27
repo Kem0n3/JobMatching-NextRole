@@ -1,91 +1,19 @@
-const { fieldOfStudyCategories } = require('../config/selectData');
+const masterVocabulary = require('./vocabularyService');
 
 const WEIGHTS = {
-    skills: 0.40,
-    categoryExperience: 0.30,
-    education: 0.15,
-    location: 0.10,
-    jobType: 0.05
+    skillSimilarity: 0.4,
+    experienceScore: 0.30,
+    educationScore: 0.15,
+    locationScore: 0.1,
+    jobTypeScore: 0.05
 };
-
-function calculateJaccardIndex(setA, setB) {
-    if (!Array.isArray(setA) || !Array.isArray(setB) || setA.length === 0 || setB.length === 0) {
-        return 0;
-    }
-    const uniqueSetA = new Set(setA.map(s => String(s).toLowerCase().trim()));
-    const uniqueSetB = new Set(setB.map(s => String(s).toLowerCase().trim()));
-
-    const intersection = new Set([...uniqueSetA].filter(item => uniqueSetB.has(item)));
-    const union = new Set([...uniqueSetA, ...uniqueSetB]);
-
-    if (union.size === 0) return 0;
-    return intersection.size / union.size;
-}
-
-function calculateSkillMatch(seekerSkills, jobRequiredSkills, jobPreferredSkills) {
-    if (!seekerSkills) seekerSkills = [];
-    if (!jobRequiredSkills) jobRequiredSkills = [];
-    if (!jobPreferredSkills) jobPreferredSkills = [];
-
-    const requiredMatchScore = calculateJaccardIndex(seekerSkills, jobRequiredSkills);
-
-    let preferredBonus = 0;
-    if (jobPreferredSkills.length > 0) {
-        const preferredJaccardScore = calculateJaccardIndex(seekerSkills, jobPreferredSkills);
-        preferredBonus = preferredJaccardScore * 0.25;
-    }
-
-    let finalSkillScore;
-    if (jobRequiredSkills.length === 0 && jobPreferredSkills.length > 0) {
-        finalSkillScore = calculateJaccardIndex(seekerSkills, jobPreferredSkills);
-    } else {
-        finalSkillScore = requiredMatchScore + preferredBonus;
-    }
-
-    return Math.min(1, finalSkillScore);
-}
-
-function calculateExperienceMatch(seekerCategoryExp, jobExpRequirements) {
-    if (!seekerCategoryExp) seekerCategoryExp = [];
-    if (!jobExpRequirements || jobExpRequirements.length === 0) {
-        return 1;
-    }
-
-    let totalScoreForMetRequirements = 0;
-    let relevantRequirementsCount = 0;
-
-    for (const req of jobExpRequirements) {
-        if (!req.category_id || req.minYears === undefined) continue;
-        relevantRequirementsCount++;
-
-        const seekerExpForCategory = seekerCategoryExp.find(exp => exp.category_id === req.category_id);
-
-        if (seekerExpForCategory) {
-            const seekerYears = parseFloat(seekerExpForCategory.years);
-            const requiredYears = parseFloat(req.minYears);
-
-            if (isNaN(seekerYears) || isNaN(requiredYears)) continue;
-
-            if (requiredYears <= 0) {
-                totalScoreForMetRequirements += 1.0;
-            } else if (seekerYears >= requiredYears) {
-                totalScoreForMetRequirements += 1.0;
-            } else if (seekerYears >= requiredYears * 0.75) {
-                totalScoreForMetRequirements += 0.65;
-            } else if (seekerYears >= requiredYears * 0.50) {
-                totalScoreForMetRequirements += 0.35;
-            }
-        }
-    }
-
-    if (relevantRequirementsCount === 0) return 1;
-    return totalScoreForMetRequirements / relevantRequirementsCount;
-}
 
 const degreeOrder = {
     "none": 0, "highschool": 1, "vocational": 2, "associate": 3,
     "bachelors": 4, "masters": 5, "professional": 6, "doctorate": 7, "other": 0
 };
+
+const { fieldOfStudyCategories } = require('../config/selectData');
 
 function findSuperCategory(fieldId) {
     for (const category in fieldOfStudyCategories) {
@@ -96,16 +24,78 @@ function findSuperCategory(fieldId) {
     return null;
 }
 
-function calculateEducationMatch(seekerDegree, seekerField, jobMinDegree, jobPreferredField) {
-    let degreeScore = 0;
-    const seekerOrdinal = degreeOrder[seekerDegree] !== undefined ? degreeOrder[seekerDegree] : -1;
-    const jobOrdinal = degreeOrder[jobMinDegree] !== undefined ? degreeOrder[jobMinDegree] : -1;
+function vectorizeSkills(skills, requiredWeight = 1.0, preferredWeight = 0.5) {
+    const skillSlice = masterVocabulary.slices.skills;
+    const vector = new Array(skillSlice.end - skillSlice.start).fill(0);
 
-    if (jobOrdinal <= 0) {
+    if (skills.required) {
+        skills.required.forEach(skillId => {
+            const index = masterVocabulary.featureMap.get(skillId);
+            if (index !== undefined && index >= skillSlice.start && index < skillSlice.end) {
+                vector[index - skillSlice.start] = requiredWeight;
+            }
+        });
+    }
+    if (skills.preferred) {
+        skills.preferred.forEach(skillId => {
+            const index = masterVocabulary.featureMap.get(skillId);
+            if (index !== undefined && index >= skillSlice.start && index < skillSlice.end) {
+                if (vector[index - skillSlice.start] === 0) {
+                    vector[index - skillSlice.start] = preferredWeight;
+                }
+            }
+        });
+    }
+    return vector;
+}
+
+function cosineSimilarity(vecA, vecB) {
+    let dotProduct = 0.0;
+    let normA = 0.0;
+    let normB = 0.0;
+    for (let i = 0; i < vecA.length; i++) {
+        dotProduct += vecA[i] * vecB[i];
+        normA += vecA[i] * vecA[i];
+        normB += vecB[i] * vecB[i];
+    }
+    const magnitude = Math.sqrt(normA) * Math.sqrt(normB);
+    if (magnitude === 0) return 0;
+    return dotProduct / magnitude;
+}
+
+function scoreExperience(seekerCategoryExp, jobExpRequirements) {
+    if (!jobExpRequirements || jobExpRequirements.length === 0) return 1.0;
+    if (!seekerCategoryExp) seekerCategoryExp = [];
+
+    let totalScore = 0;
+    let relevantRequirementsCount = 0;
+
+    for (const req of jobExpRequirements) {
+        if (!req.category_id || req.minYears === undefined) continue;
+        relevantRequirementsCount++;
+        const seekerExp = seekerCategoryExp.find(e => e.category_id === req.category_id);
+        if (seekerExp) {
+            if (seekerExp.years >= req.minYears) {
+                totalScore += 1.0;
+            } else {
+                totalScore += seekerExp.years / req.minYears;
+            }
+        }
+    }
+    if (relevantRequirementsCount === 0) return 1.0;
+    return totalScore / relevantRequirementsCount;
+}
+
+function scoreEducation(seekerDegree, seekerField, jobMinDegree, jobPreferredField) {
+    let degreeScore = 0;
+    const seekerOrdinal = degreeOrder[seekerDegree] || -1;
+    const jobMinOrdinal = degreeOrder[jobMinDegree] || -1;
+
+    if (jobMinOrdinal <= 0) {
         degreeScore = 1.0;
-    } else if (seekerOrdinal >= jobOrdinal) {
+    } else if (seekerOrdinal >= jobMinOrdinal) {
         degreeScore = 1.0;
-    } else if (jobOrdinal > 0 && seekerOrdinal === jobOrdinal - 1) {
+    } else if (seekerOrdinal === jobMinOrdinal - 1) {
         degreeScore = 0.5;
     }
 
@@ -125,11 +115,10 @@ function calculateEducationMatch(seekerDegree, seekerField, jobMinDegree, jobPre
     } else {
         fieldScore = 1.0;
     }
-
     return (degreeScore * 0.7) + (fieldScore * 0.3);
 }
 
-function calculateLocationMatch(seekerLocations, seekerWillingRemote, jobLocation, jobAllowsRemote) {
+function scoreLocation(seekerLocations, seekerWillingRemote, jobLocation, jobAllowsRemote) {
     if (!seekerLocations) seekerLocations = [];
     if (jobLocation === "remote") {
         return seekerWillingRemote || seekerLocations.includes("remote") ? 1.0 : 0.3;
@@ -141,66 +130,49 @@ function calculateLocationMatch(seekerLocations, seekerWillingRemote, jobLocatio
         return 0.2;
     }
     if (seekerLocations.includes(jobLocation)) return 1.0;
-    if (seekerLocations.includes("anywhere") && !seekerWillingRemote) return 0.5;
+    if (seekerLocations.includes("anywhere")) return 0.5;
     return 0;
 }
 
-function calculateJobTypeMatch(seekerDesiredTypes, jobType) {
+function scoreJobType(seekerDesiredTypes, jobType) {
     if (!seekerDesiredTypes || seekerDesiredTypes.length === 0 || !jobType) return 0.5;
     return seekerDesiredTypes.includes(jobType) ? 1.0 : 0.1;
 }
 
 function calculateOverallMatchScore(seekerProfile, jobPosting) {
-    if (!seekerProfile || !jobPosting) {
-        return 0;
-    }
+    if (!seekerProfile || !jobPosting) return 0;
 
     const sSkills = seekerProfile.skills || [];
     const jReqSkills = jobPosting.requiredSkills || [];
 
-    // Hard Filter for Skills 
     if (jReqSkills.length > 0 && sSkills.length > 0) {
-        const seekerSkillSet = new Set(sSkills.map(s => String(s).toLowerCase().trim()));
-        const jobRequiredSkillSet = new Set(jReqSkills.map(s => String(s).toLowerCase().trim()));
+        const seekerSkillSet = new Set(sSkills);
+        const jobRequiredSkillSet = new Set(jReqSkills);
         const intersection = new Set([...seekerSkillSet].filter(skill => jobRequiredSkillSet.has(skill)));
         if (intersection.size === 0) {
-            return 0; //Disqualify if there is zero overlap with required skills.
+            return 0;
         }
     } else if (jReqSkills.length > 0 && sSkills.length === 0) {
-        return 0; //Job requires skills, but seeker has none.
+        return 0;
     }
 
+    const seekerSkillVector = vectorizeSkills({ required: sSkills });
+    const jobSkillVector = vectorizeSkills({ required: jReqSkills, preferred: jobPosting.preferredSkills });
+    const skillSimilarity = cosineSimilarity(seekerSkillVector, jobSkillVector);
 
-    //Proceeding with Soft Scoring if Hard Filter is Passed 
-    const sCatExp = seekerProfile.categoryExperience || [];
-    const sDegree = seekerProfile.degreeLevel;
-    const sField = seekerProfile.fieldOfStudy;
-    const sLocs = seekerProfile.preferredLocations || [];
-    const sRemote = seekerProfile.isWillingToRemote || false;
-    const sJobTypes = seekerProfile.desiredJobTypes || [];
-
-    const jPrefSkills = jobPosting.preferredSkills || [];
-    const jExpReqs = jobPosting.experienceRequirements || [];
-    const jMinDegree = jobPosting.minimumDegreeLevel;
-    const jPrefField = jobPosting.preferredFieldOfStudy;
-    const jLoc = jobPosting.jobLocation;
-    const jAllowsRemote = jobPosting.allowsRemote || false;
-    const jType = jobPosting.jobType;
-
-    const skillScore = calculateSkillMatch(sSkills, jReqSkills, jPrefSkills);
-    const expScore = calculateExperienceMatch(sCatExp, jExpReqs);
-    const eduScore = calculateEducationMatch(sDegree, sField, jMinDegree, jPrefField);
-    const locScore = calculateLocationMatch(sLocs, sRemote, jLoc, jAllowsRemote);
-    const typeScore = calculateJobTypeMatch(sJobTypes, jType);
+    const experienceScore = scoreExperience(seekerProfile.categoryExperience, jobPosting.experienceRequirements);
+    const educationScore = scoreEducation(seekerProfile.degreeLevel, seekerProfile.fieldOfStudy, jobPosting.minimumDegreeLevel, jobPosting.preferredFieldOfStudy);
+    const locationScore = scoreLocation(seekerProfile.preferredLocations, seekerProfile.isWillingToRemote, jobPosting.jobLocation, jobPosting.allowsRemote);
+    const jobTypeScore = scoreJobType(seekerProfile.desiredJobTypes, jobPosting.jobType);
 
     const overallScore =
-        (skillScore * WEIGHTS.skills) +
-        (expScore * WEIGHTS.categoryExperience) +
-        (eduScore * WEIGHTS.education) +
-        (locScore * WEIGHTS.location) +
-        (typeScore * WEIGHTS.jobType);
+        (skillSimilarity * WEIGHTS.skillSimilarity) +
+        (experienceScore * WEIGHTS.experienceScore) +
+        (educationScore * WEIGHTS.educationScore) +
+        (locationScore * WEIGHTS.locationScore) +
+        (jobTypeScore * WEIGHTS.jobTypeScore);
 
     return parseFloat(overallScore.toFixed(4));
 }
 
-module.exports = { calculateOverallMatchScore, WEIGHTS };
+module.exports = { calculateOverallMatchScore };
