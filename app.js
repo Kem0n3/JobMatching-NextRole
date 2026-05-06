@@ -1,11 +1,12 @@
 require('dotenv').config();
 
 const express = require('express');
-const mongoose = require('mongoose');
 const session = require('express-session');
 const passport = require('passport');
 const path = require('path');
 const flash = require('connect-flash');
+
+const connectDB = require('./config/db');
 
 const JobSeekerProfile = require('./models/JobSeekerProfile');
 const Application = require('./models/Application');
@@ -31,15 +32,7 @@ const app = express();
 
 require('./config/passport')(passport);
 
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB Connected...'))
-.catch(err => {
-    console.error('MongoDB Connection Error:', err);
-    process.exit(1);
-});
+connectDB();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
