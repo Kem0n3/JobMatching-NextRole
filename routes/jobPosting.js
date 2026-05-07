@@ -9,6 +9,10 @@ const {
     locationsList, broaderCategoriesList, jobTypeList, careerLevelsList
 } = require('../config/selectData');
 
+function parseNonNegativeNumber(value) {
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
 
 router.get('/new', ensureAuthenticated, ensureRecruiter, (req, res) => {
     const jobDataForTemplate = { experienceRequirements: [{}], allowsRemote: false, isActive: true };
@@ -153,7 +157,7 @@ router.post('/', ensureAuthenticated, ensureRecruiter, async (req, res, next) =>
 
     if (experienceRequirements && Array.isArray(experienceRequirements)) {
         experienceRequirements.forEach((exp, index) => {
-            if (exp.category_id && (exp.minYears === undefined || exp.minYears === '' || parseInt(exp.minYears) < 0)) {
+            if (exp.category_id && parseNonNegativeNumber(exp.minYears) === null) {
                 errors.push({ msg: `Valid minimum years are required for experience category (entry #${index + 1}).` });
             }
             if (!exp.category_id && exp.minYears && exp.minYears !== '') {
@@ -190,8 +194,8 @@ router.post('/', ensureAuthenticated, ensureRecruiter, async (req, res, next) =>
 
     if (experienceRequirements && Array.isArray(experienceRequirements)) {
         jobFields.experienceRequirements = experienceRequirements
-            .filter(exp => exp.category_id && exp.category_id !== '' && exp.minYears !== undefined && exp.minYears !== '' && parseInt(exp.minYears) >= 0)
-            .map(exp => ({ category_id: exp.category_id, minYears: parseInt(exp.minYears) }));
+            .filter(exp => exp.category_id && exp.category_id !== '' && parseNonNegativeNumber(exp.minYears) !== null)
+            .map(exp => ({ category_id: exp.category_id, minYears: parseNonNegativeNumber(exp.minYears) }));
     }
 
     try {
@@ -232,6 +236,26 @@ router.post('/:id', ensureAuthenticated, ensureRecruiter, async (req, res, next)
 
     const errors = [];
     if (!jobTitle || jobTitle.trim() === '') errors.push({ msg: 'Job title is required.' });
+    if (!companyName || companyName.trim() === '') errors.push({ msg: 'Company name is required.' });
+    if (!jobDescription || jobDescription.trim() === '') errors.push({ msg: 'Job description is required.' });
+    if (!requiredSkills || (Array.isArray(requiredSkills) && requiredSkills.length === 0)) {
+        errors.push({ msg: 'At least one required skill is required.' });
+    }
+    if (!minimumDegreeLevel) errors.push({ msg: 'Minimum degree level is required.' });
+    if (!jobLocation) errors.push({ msg: 'Job location is required.' });
+    if (!jobType) errors.push({ msg: 'Job type is required.' });
+    if (!careerLevel) errors.push({ msg: 'Career level is required.' });
+
+    if (experienceRequirements && Array.isArray(experienceRequirements)) {
+        experienceRequirements.forEach((exp, index) => {
+            if (exp.category_id && parseNonNegativeNumber(exp.minYears) === null) {
+                errors.push({ msg: `Valid minimum years are required for experience category (entry #${index + 1}).` });
+            }
+            if (!exp.category_id && exp.minYears && exp.minYears !== '') {
+                 errors.push({ msg: `Category is required for experience requirement #${index + 1} if years are specified.` });
+            }
+        });
+    }
 
     if (errors.length > 0) {
         const jobDataForForm = { ...req.body, _id: jobId };
@@ -269,8 +293,8 @@ router.post('/:id', ensureAuthenticated, ensureRecruiter, async (req, res, next)
         job.experienceRequirements = [];
         if (experienceRequirements && Array.isArray(experienceRequirements)) {
             job.experienceRequirements = experienceRequirements
-                .filter(exp => exp.category_id && exp.category_id !== '' && exp.minYears !== undefined && exp.minYears !== '' && parseInt(exp.minYears) >= 0)
-                .map(exp => ({ category_id: exp.category_id, minYears: parseInt(exp.minYears) }));
+                .filter(exp => exp.category_id && exp.category_id !== '' && parseNonNegativeNumber(exp.minYears) !== null)
+                .map(exp => ({ category_id: exp.category_id, minYears: parseNonNegativeNumber(exp.minYears) }));
         }
         await job.save();
         if (req.flash) req.flash('success_msg', 'Job posting updated successfully!');

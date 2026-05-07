@@ -14,10 +14,10 @@ router.post('/register', async (req, res) => {
     if (!username || !email || !password || !password2 || !role) {
         errors.push({ msg: 'Please enter all fields' });
     }
-    if (password != password2) {
+    if (password !== password2) {
         errors.push({ msg: 'Passwords do not match' });
     }
-    if (password.length < 6) {
+    if (password && password.length < 6) {
         errors.push({ msg: 'Password must be at least 6 characters' });
     }
 
