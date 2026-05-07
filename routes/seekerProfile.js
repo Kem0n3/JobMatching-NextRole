@@ -9,6 +9,11 @@ const {
     locationsList, broaderCategoriesList, jobTypeList
 } = require('../config/selectData');
 
+function parseNonNegativeNumber(value) {
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
 // --- Routes for Seekers Managing Their Own Profile ---
 
 router.get('/form', ensureAuthenticated, ensureSeeker, async (req, res, next) => {
@@ -53,7 +58,7 @@ router.post('/', ensureAuthenticated, ensureSeeker, async (req, res, next) => {
 
     if (categoryExperience && Array.isArray(categoryExperience)) {
         categoryExperience.forEach((exp, index) => {
-            if (exp.category_id && (exp.years === undefined || exp.years === '' || parseInt(exp.years) < 0)) {
+            if (exp.category_id && parseNonNegativeNumber(exp.years) === null) {
                 errors.push({ msg: `Valid years are required for experience category (entry #${index + 1}).` });
             }
             if (!exp.category_id && exp.years && exp.years !== '') {
@@ -93,10 +98,10 @@ router.post('/', ensureAuthenticated, ensureSeeker, async (req, res, next) => {
 
     if (categoryExperience && Array.isArray(categoryExperience)) {
         profileFields.categoryExperience = categoryExperience
-            .filter(exp => exp.category_id && exp.category_id !== '' && exp.years !== undefined && exp.years !== '' && parseInt(exp.years) >= 0)
+            .filter(exp => exp.category_id && exp.category_id !== '' && parseNonNegativeNumber(exp.years) !== null)
             .map(exp => ({
                 category_id: exp.category_id,
-                years: parseInt(exp.years)
+                years: parseNonNegativeNumber(exp.years)
             }));
     }
 

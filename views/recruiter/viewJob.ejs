@@ -63,6 +63,7 @@
                                     <button class="btn btn-applied" disabled>Applied</button>
                                 <% } else { %>
                                     <form action="/applications/apply/<%= job._id %>" method="POST">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                         <button type="submit" class="btn btn-primary">Apply Now</button>
                                     </form>
                                 <% } %>
@@ -77,7 +78,7 @@
                             <div class="job-details-main">
                                 <h2>Job Description</h2>
                                 <div class="description-content">
-                                    <%- job.jobDescription.replace(/\n/g, '<br>') %>
+                                    <%- escapeHtml(job.jobDescription).replace(/\r?\n/g, '<br>') %>
                                 </div>
 
                                 <h2>Required Skills</h2>

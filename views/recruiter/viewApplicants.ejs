@@ -55,6 +55,7 @@
                                     <div class="applicant-meta">
                                         <p class="application-date">Applied: <%= new Date(app.applicationDate).toLocaleDateString() %></p>
                                         <form class="status-update-form" action="/applications/status/<%= app._id %>" method="POST">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                             <select name="newStatus" onchange="this.form.submit()">
                                                 <% const statuses = ['Applied', 'Viewed', 'Under Review', 'Interviewing', 'Offered', 'Hired', 'Rejected', 'Withdrawn']; %>
                                                 <% statuses.forEach(s => { %>

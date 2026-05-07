@@ -103,6 +103,7 @@
                                             <button class="btn btn-applied" disabled style="width:100%;">Applied</button>
                                         <% } else { %>
                                             <form action="/applications/apply/<%= job._id %>" method="POST" style="width:100%;">
+                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                                 <button type="submit" class="btn btn-primary" style="width:100%;">Quick Apply</button>
                                             </form>
                                         <% } %>

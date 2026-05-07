@@ -7,6 +7,7 @@ const path = require('path');
 const flash = require('connect-flash');
 
 const connectDB = require('./config/db');
+const csrfProtection = require('./middleware/csrfMiddleware');
 
 const JobSeekerProfile = require('./models/JobSeekerProfile');
 const Application = require('./models/Application');
@@ -36,6 +37,14 @@ connectDB();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.locals.escapeHtml = function(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+};
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
@@ -51,6 +60,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.use(csrfProtection);
 app.use(addSeekerProfileData);
 
 app.use((req, res, next) => {
@@ -118,7 +128,7 @@ app.get('/dashboard', ensureAuthenticated, async (req, res, next) => {
 
             const applicationStatusCounts = {};
             const statusOrder = ['Applied', 'Viewed', 'Under Review', 'Interviewing', 'Offered', 'Hired', 'Rejected', 'Withdrawn'];
-            const statusColorsHex = { Applied: '#2563eb', Viewed: '#f59e0b', UnderReview: '#f59e0b', Interviewing: '#10b981', Offered: '#8b5cf6', Hired: '#16a34a', Rejected: '#ef4444', Withdrawn: '#6b7280' };
+            const statusColorsHex = { Applied: '#2563eb', Viewed: '#f59e0b', 'Under Review': '#f59e0b', Interviewing: '#10b981', Offered: '#8b5cf6', Hired: '#16a34a', Rejected: '#ef4444', Withdrawn: '#6b7280' };
 
             statusOrder.forEach(status => {
                 const count = allMyApps.filter(app => app.status === status).length;
