@@ -180,6 +180,80 @@
 }
 .error-messages ul { margin: 0; padding-left: 20px; }
 
+.success-messages {
+    border: 1px solid #86efac;
+    background-color: #dcfce7;
+    color: #166534;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+}
+.success-messages ul { margin: 0; padding-left: 20px; }
+
+.resume-prefill-message {
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border: 1px solid #bfdbfe;
+    background-color: #eff6ff;
+    color: #1e40af;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.9rem;
+}
+
+.resume-current-file {
+    margin-bottom: 16px;
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--color-bg-page);
+}
+
+.resume-current-file p {
+    margin: 0;
+    color: var(--color-text-base);
+}
+
+.resume-current-meta {
+    margin-top: 4px !important;
+    color: var(--color-text-subtle) !important;
+    font-size: 0.85rem;
+}
+
+.resume-link-btn {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.resume-link-btn:hover {
+    text-decoration: underline;
+}
+
+.resume-upload-form .form-group {
+    width: 100%;
+}
+
+.resume-clear-draft-form {
+    margin-bottom: 14px;
+}
+
+.resume-clear-btn {
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-content);
+    color: var(--color-text-subtle);
+    border-radius: var(--border-radius-sm);
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.resume-clear-btn:hover {
+    border-color: #ef4444;
+    color: #b91c1c;
+}
+
 /* --- Select2 Overrides --- */
 .select2-container { width: 100% !important; }
 

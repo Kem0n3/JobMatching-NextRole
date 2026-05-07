@@ -40,6 +40,26 @@
                 </div>
 
                 <div class="form-container">
+                    <% if (locals.success_msg && locals.success_msg.length > 0) { %>
+                        <div class="success-messages card">
+                            <ul>
+                                <% success_msg.forEach(function(message) { %>
+                                    <li><%= message %></li>
+                                <% }); %>
+                            </ul>
+                        </div>
+                    <% } %>
+
+                    <% if (locals.error_msg && locals.error_msg.length > 0) { %>
+                        <div class="error-messages card">
+                            <ul>
+                                <% error_msg.forEach(function(message) { %>
+                                    <li><%= message %></li>
+                                <% }); %>
+                            </ul>
+                        </div>
+                    <% } %>
+
                     <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
                         <div class="error-messages card">
                             <ul>
@@ -50,9 +70,50 @@
                         </div>
                     <% } %>
 
+                    <div class="form-section">
+                        <h2>Resume Upload</h2>
+
+                        <% if (resumePrefillMode && resumeDraft) { %>
+                            <div class="resume-prefill-message">
+                                <strong>Resume uploaded:</strong> <%= resumeDraft.resumeOriginalName || 'Resume file' %>.
+                                We prefilled detected fields below. Review and save your profile to persist them.
+                            </div>
+                            <form action="/profile/resume/draft/clear" method="POST" class="resume-clear-draft-form">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <input type="hidden" name="redirectTo" value="/profile/form">
+                                <button type="submit" class="resume-clear-btn">Clear Uploaded Draft</button>
+                            </form>
+                        <% } %>
+
+                        <% if (isEditMode && profileData.resumeUrl) { %>
+                            <div class="resume-current-file">
+                                <p><strong>Current resume:</strong> <%= profileData.resumeOriginalName || 'Resume' %></p>
+                                <p class="resume-current-meta">
+                                    Uploaded <%= profileData.resumeUploadedAt ? new Date(profileData.resumeUploadedAt).toLocaleDateString() : 'recently' %>
+                                </p>
+                                <a href="<%= profileData.resumeUrl %>" target="_blank" rel="noopener noreferrer" class="resume-link-btn">View Current Resume</a>
+                            </div>
+                        <% } else if (!isEditMode && resumeDraft) { %>
+                            <div class="resume-current-file">
+                                <p><strong>Uploaded resume draft:</strong> <%= resumeDraft.resumeOriginalName || 'Resume' %></p>
+                                <a href="<%= resumeDraft.resumeUrl %>" target="_blank" rel="noopener noreferrer" class="resume-link-btn">Preview Uploaded File</a>
+                            </div>
+                        <% } %>
+
+                        <form action="/profile/resume/upload?_csrf=<%= encodeURIComponent(csrfToken) %>" method="POST" enctype="multipart/form-data" class="resume-upload-form">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input type="hidden" name="redirectTo" value="/profile/form">
+                            <div class="form-group full-width">
+                                <label for="resume">Upload Resume (PDF, DOC, DOCX - max 5MB)</label>
+                                <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required>
+                            </div>
+                            <button type="submit" class="add-btn">Upload and Parse Resume</button>
+                        </form>
+                    </div>
+
                     <form action="/profile" method="POST">
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                        <%# ... (All your .form-section divs and form content as before) ... %>
+
                         <div class="form-section">
                             <h2>Basic Information</h2>
                             <div class="form-group">
@@ -167,15 +228,17 @@
                 function initializeSelect2(selector) {
                     $(selector).select2({
                         placeholder: $(selector).find('option[value=""]').text() || "Select an option",
-                        allowClear: false, // --- CHANGE #3: Set allowClear to false for single selects ---
+                        allowClear: false,
                         width: '100%'
                     });
                 }
+
                 $('.select2-multiple').select2({
-                    placeholder: "Type to add skills...",
+                    placeholder: "Type to add options...",
                     allowClear: true,
                     width: '100%'
                 });
+
                 $('.select2-single').each(function() {
                     initializeSelect2(this);
                 });
@@ -226,6 +289,7 @@
                     $(this).closest('.dynamic-entry').remove();
                     reindexCategoryExperience();
                 });
+
                 reindexCategoryExperience();
             });
         </script>

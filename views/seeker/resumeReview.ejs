@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #2563eb; --color-primary-dark: #1d4ed8; --color-primary-light: #dbeafe;
+            --color-text-strong: #111827; --color-text-base: #374151; --color-text-subtle: #6b7280;
+            --color-text-on-primary: #ffffff; --color-bg-page: #f9fafb; --color-bg-content: #ffffff;
+            --color-border: #e5e7eb; --font-family-main: 'Inter', sans-serif;
+            --border-radius: 0.75rem; --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/resume-review.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar-area">
+            <%- include('../partials/sidebar') %>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="navbar-area">
+                <%- include('../partials/navbar') %>
+            </header>
+
+            <main class="main-content-area">
+                <div class="page-header">
+                    <h1>Review Resume Suggestions</h1>
+                    <p>Apply only the suggestions you want in your profile.</p>
+                </div>
+
+                <div class="review-card">
+                    <div class="resume-meta">
+                        <p><strong>File:</strong> <%= profileData.resumeOriginalName || 'Resume' %></p>
+                        <p><strong>Uploaded:</strong> <%= profileData.resumeUploadedAt ? new Date(profileData.resumeUploadedAt).toLocaleDateString() : 'Recently' %></p>
+                    </div>
+
+                    <form action="/profile/resume/apply" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                        <div class="review-section">
+                            <h2>Detected Skills</h2>
+                            <% const existingSkills = profileData.skills || []; %>
+                            <% const detectedSkills = (parsedData.skills || []); %>
+                            <% const alreadyAddedSkills = detectedSkills.filter(skillId => existingSkills.includes(skillId)); %>
+
+                            <% if (suggestedSkills.length > 0) { %>
+                                <div class="checkbox-list">
+                                    <% suggestedSkills.forEach(function(skillId) { %>
+                                        <% const skillObj = skillsList.find(skill => skill.id === skillId); %>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="applySkills" value="<%= skillId %>" checked>
+                                            <span><%= skillObj ? skillObj.text : skillId %></span>
+                                        </label>
+                                    <% }); %>
+                                </div>
+                            <% } else if (detectedSkills.length > 0) { %>
+                                <p class="hint-text">All detected skills are already in your profile.</p>
+                            <% } else { %>
+                                <p class="hint-text">No skills were detected automatically.</p>
+                            <% } %>
+
+                            <% if (alreadyAddedSkills.length > 0) { %>
+                                <div class="already-added-box">
+                                    <p>Already in profile:</p>
+                                    <div class="tag-row">
+                                        <% alreadyAddedSkills.forEach(function(skillId) { %>
+                                            <% const skillObj = skillsList.find(skill => skill.id === skillId); %>
+                                            <span class="status-tag"><%= skillObj ? skillObj.text : skillId %></span>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <div class="review-section">
+                            <h2>Education Suggestions</h2>
+
+                            <% if (parsedData.degreeLevel) { %>
+                                <% const degreeObj = degreeLevelsList.find(degree => degree.id === parsedData.degreeLevel); %>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="applyDegree" value="<%= parsedData.degreeLevel %>">
+                                    <span>Apply detected degree: <strong><%= degreeObj ? degreeObj.text : parsedData.degreeLevel %></strong></span>
+                                </label>
+                            <% } else { %>
+                                <p class="hint-text">No degree suggestion detected.</p>
+                            <% } %>
+
+                            <% if (parsedData.fieldOfStudy) { %>
+                                <% const fieldObj = fieldsOfStudyList.find(field => field.id === parsedData.fieldOfStudy); %>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="applyField" value="<%= parsedData.fieldOfStudy %>">
+                                    <span>Apply detected field: <strong><%= fieldObj ? fieldObj.text : parsedData.fieldOfStudy %></strong></span>
+                                </label>
+                            <% } else { %>
+                                <p class="hint-text">No field-of-study suggestion detected.</p>
+                            <% } %>
+                        </div>
+
+                        <div class="actions-row">
+                            <button type="submit" class="btn-primary">Apply Selected Suggestions</button>
+                            <a href="/profile/me" class="btn-secondary">Skip</a>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

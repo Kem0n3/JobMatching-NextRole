@@ -183,3 +183,116 @@
         text-align: left;
     }
 }
+
+.success-messages,
+.error-messages {
+    border-radius: var(--border-radius);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+
+.success-messages {
+    border: 1px solid #86efac;
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.error-messages {
+    border: 1px solid #fca5a5;
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.success-messages ul,
+.error-messages ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.resume-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    background-color: var(--color-bg-page);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--color-border);
+    flex-wrap: wrap;
+}
+
+.resume-file-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.resume-icon {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary-light);
+    background-color: var(--color-primary-light);
+    padding: 4px 8px;
+    border-radius: 999px;
+}
+
+.resume-filename {
+    font-weight: 600;
+    color: var(--color-text-base);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.resume-date {
+    font-size: 0.8rem;
+    color: var(--color-text-subtle);
+    margin: 2px 0 0;
+}
+
+.resume-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-resume-action {
+    display: inline-block;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    color: var(--color-text-base);
+    background-color: var(--color-bg-content);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-resume-action:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.resume-upload-prompt {
+    text-align: center;
+    padding: 20px;
+}
+
+.btn-upload-resume {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: var(--color-primary);
+    color: var(--color-text-on-primary);
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.btn-upload-resume:hover {
+    background-color: var(--color-primary-dark);
+}

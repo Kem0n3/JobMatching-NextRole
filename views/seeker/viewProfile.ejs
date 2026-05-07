@@ -33,6 +33,26 @@
             </header>
 
             <main class="main-content-area">
+                <% if (locals.success_msg && locals.success_msg.length > 0) { %>
+                    <div class="success-messages card">
+                        <ul>
+                            <% success_msg.forEach(function(message) { %>
+                                <li><%= message %></li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                <% } %>
+
+                <% if (locals.error_msg && locals.error_msg.length > 0) { %>
+                    <div class="error-messages card">
+                        <ul>
+                            <% error_msg.forEach(function(message) { %>
+                                <li><%= message %></li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                <% } %>
+
                 <% if (profileData) { %>
                     <div class="profile-container">
                         <div class="profile-header">
@@ -65,6 +85,52 @@
                                 </div>
                             <% } else { %>
                                 <p class="no-data-message">No skills listed.</p>
+                            <% } %>
+                        </div>
+
+                        <div class="profile-card">
+                            <h2>Resume</h2>
+                            <% if (profileData.resumeUrl) { %>
+                                <div class="resume-display">
+                                    <div class="resume-file-info">
+                                        <span class="resume-icon">Resume</span>
+                                        <div>
+                                            <p class="resume-filename"><%= profileData.resumeOriginalName || 'Resume' %></p>
+                                            <p class="resume-date">
+                                                Uploaded <%= profileData.resumeUploadedAt ? new Date(profileData.resumeUploadedAt).toLocaleDateString() : 'recently' %>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <% if (!isRecruiterView) { %>
+                                        <div class="resume-actions">
+                                            <a href="<%= profileData.resumeUrl %>" target="_blank" rel="noopener noreferrer" class="btn-resume-action">View</a>
+                                            <label for="resumeReplaceInput" class="btn-resume-action btn-resume-replace">Replace</label>
+                                            <a href="/profile/resume/review" class="btn-resume-action">Review Suggestions</a>
+                                        </div>
+                                        <form action="/profile/resume/upload?_csrf=<%= encodeURIComponent(csrfToken) %>" method="POST" enctype="multipart/form-data" id="resumeReplaceForm">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <input type="hidden" name="redirectTo" value="/profile/me">
+                                            <input type="file" id="resumeReplaceInput" name="resume" accept=".pdf,.doc,.docx" style="display:none;">
+                                        </form>
+                                    <% } else { %>
+                                        <a href="<%= profileData.resumeUrl %>" target="_blank" rel="noopener noreferrer" class="btn-resume-action">Download Resume</a>
+                                    <% } %>
+                                </div>
+                            <% } else if (!isRecruiterView) { %>
+                                <div class="resume-upload-prompt">
+                                    <p>No resume uploaded yet.</p>
+                                    <form action="/profile/resume/upload?_csrf=<%= encodeURIComponent(csrfToken) %>" method="POST" enctype="multipart/form-data" id="resumeUploadPromptForm">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <input type="hidden" name="redirectTo" value="/profile/me">
+                                        <label class="btn-upload-resume" for="resumeUploadPromptInput">
+                                            Upload Resume (PDF, DOC, DOCX - max 5MB)
+                                        </label>
+                                        <input type="file" id="resumeUploadPromptInput" name="resume" accept=".pdf,.doc,.docx" style="display:none;">
+                                    </form>
+                                </div>
+                            <% } else { %>
+                                <p class="no-data-message">No resume uploaded.</p>
                             <% } %>
                         </div>
 
@@ -142,6 +208,30 @@
             </main>
         </div>
         <script src="/js/main.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const replaceInput = document.getElementById('resumeReplaceInput');
+                const replaceForm = document.getElementById('resumeReplaceForm');
+                const uploadPromptInput = document.getElementById('resumeUploadPromptInput');
+                const uploadPromptForm = document.getElementById('resumeUploadPromptForm');
+
+                if (replaceInput && replaceForm) {
+                    replaceInput.addEventListener('change', function() {
+                        if (replaceInput.files && replaceInput.files.length > 0) {
+                            replaceForm.submit();
+                        }
+                    });
+                }
+
+                if (uploadPromptInput && uploadPromptForm) {
+                    uploadPromptInput.addEventListener('change', function() {
+                        if (uploadPromptInput.files && uploadPromptInput.files.length > 0) {
+                            uploadPromptForm.submit();
+                        }
+                    });
+                }
+            });
+        </script>
     </div>
 </body>
 </html>

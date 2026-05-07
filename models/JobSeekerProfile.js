@@ -26,7 +26,16 @@ const JobSeekerProfileSchema = new mongoose.Schema({
         validate: [val => val.length > 0, 'At least one desired job type is required.'],
         enum: ['Full-time', 'Part-time', 'Contract', 'Internship'] 
     },
-    summary: { type: String, trim: true, maxlength: [1000, 'Summary cannot be more than 1000 characters.'] }
+    summary: { type: String, trim: true, maxlength: [1000, 'Summary cannot be more than 1000 characters.'] },
+    resumeUrl: { type: String, default: null },
+    resumeOriginalName: { type: String, default: null },
+    resumeUploadedAt: { type: Date, default: null },
+    resumeParsedData: {
+        skills: [{ type: String }],
+        degreeLevel: { type: String, default: null },
+        fieldOfStudy: { type: String, default: null },
+        extractedText: { type: String, default: null }
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('JobSeekerProfile', JobSeekerProfileSchema);

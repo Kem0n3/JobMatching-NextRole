@@ -15,7 +15,10 @@ function csrfProtection(req, res, next) {
         return next();
     }
 
-    const submittedToken = req.body._csrf || req.get('x-csrf-token');
+    const submittedToken =
+        (req.body && req.body._csrf) ||
+        (req.query && req.query._csrf) ||
+        req.get('x-csrf-token');
     if (submittedToken && submittedToken === token) {
         return next();
     }
