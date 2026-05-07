@@ -49,6 +49,7 @@
                     <% } %>
 
                     <form action="<%= isEditMode ? '/jobs/' + jobId : '/jobs' %>" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <div class="form-section">
                             <h2>Job Details</h2>
                             <div class="form-grid">
