@@ -23,6 +23,7 @@ const jobPostingRoutes = require('./routes/jobPosting');
 const matchesRoutes = require('./routes/matches');
 const applicationRoutes = require('./routes/applicationRoutes');
 const browseRoutes = require('./routes/browseRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 const {
     skillsList, degreeLevelsList, fieldsOfStudyList,
@@ -78,6 +79,7 @@ app.use('/jobs', jobPostingRoutes);
 app.use('/matches', matchesRoutes);
 app.use('/applications', applicationRoutes);
 app.use('/browse', browseRoutes);
+app.use('/notifications', notificationRoutes);
 
 app.get('/', (req, res) => {
     res.render('index', {

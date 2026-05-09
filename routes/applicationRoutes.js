@@ -3,6 +3,7 @@ const router = express.Router();
 const Application = require('../models/Application');
 const JobPosting = require('../models/JobPosting');
 const JobSeekerProfile = require('../models/JobSeekerProfile');
+const { createNotification } = require('../services/notificationService');
 const { ensureAuthenticated, ensureSeeker, ensureRecruiter } = require('../middleware/authMiddleware');
 const { skillsList, degreeLevelsList, fieldsOfStudyList, locationsList, broaderCategoriesList } = require('../config/selectData');
 
@@ -28,6 +29,16 @@ router.post('/apply/:jobId', ensureAuthenticated, ensureSeeker, async (req, res)
             seeker_user_id: seekerUserId
         });
         await newApplication.save();
+
+        const jobForNotif = await JobPosting.findById(jobId).populate('recruiter_id', '_id');
+        if (jobForNotif && jobForNotif.recruiter_id) {
+            await createNotification(
+                jobForNotif.recruiter_id._id,
+                'new_application',
+                `New application received for "${jobForNotif.jobTitle}"`,
+                `/applications/job/${jobId}/applicants`
+            );
+        }
 
         if (req.flash) req.flash('success_msg', 'Application submitted successfully!');
         res.redirect(`/jobs/${jobId}`);
@@ -109,6 +120,13 @@ router.post('/status/:applicationId', ensureAuthenticated, ensureRecruiter, asyn
 
         application.status = newStatus;
         await application.save();
+
+        await createNotification(
+            application.seeker_user_id,
+            'status_change',
+            `Your application for "${application.job_id.jobTitle}" has been updated to: ${newStatus}`,
+            '/applications/my'
+        );
 
         if (req.flash) req.flash('success_msg', `Application status updated to ${newStatus}.`);
         res.redirect(`/applications/job/${application.job_id._id}/applicants`);

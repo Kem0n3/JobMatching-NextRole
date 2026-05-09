@@ -24,11 +24,15 @@
                 <li class="<%= locals.activeNavItem === 'myApplications' ? 'active' : '' %>">
                     <a href="/applications/my">My Applications</a>
                 </li>
+                <li class="<%= locals.activeNavItem === 'notifications' ? 'active' : '' %>">
+                    <a href="/notifications">Notifications</a>
+                </li>
             <% } else if (isAuthenticated && currentUser.role === 'recruiter') { %>
                 <li class="<%= locals.activeNavItem === 'dashboard' ? 'active' : '' %>"><a href="/dashboard">Dashboard</a></li>
                 <li class="<%= locals.activeNavItem === 'postJob' ? 'active' : '' %>"><a href="/jobs/new">Post New Job</a></li>
                 <li class="<%= locals.activeNavItem === 'myJobs' ? 'active' : '' %>"><a href="/jobs/my">My Jobs</a></li>
                 <li class="<%= locals.activeNavItem === 'browseSeekers' ? 'active' : '' %>"><a href="/browse/seekers">Browse Seekers</a></li>
+                <li class="<%= locals.activeNavItem === 'notifications' ? 'active' : '' %>"><a href="/notifications">Notifications</a></li>
             <% } %>
         </ul>
     </nav>

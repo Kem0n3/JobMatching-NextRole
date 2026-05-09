@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="/css/notifications.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar-area">
+      <%- include('../partials/sidebar') %>
+    </aside>
+    <div class="main-wrapper">
+      <header class="navbar-area">
+        <%- include('../partials/navbar') %>
+      </header>
+      <main class="main-content-area">
+        <div class="dashboard-header">
+          <h1>Notifications</h1>
+          <p>Your recent activity and updates.</p>
+        </div>
+
+        <% if (notifications && notifications.length > 0) { %>
+          <div class="notifications-list">
+            <% notifications.forEach(function(notif) { %>
+              <div class="notif-item <%= notif.isRead ? 'is-read' : 'is-unread' %>">
+                <div class="notif-dot"></div>
+                <div class="notif-content">
+                  <p class="notif-message"><%= notif.message %></p>
+                  <span class="notif-time">
+                    <%= new Date(notif.createdAt).toLocaleDateString('en-US', {
+                      month: 'short', day: 'numeric',
+                      hour: '2-digit', minute: '2-digit'
+                    }) %>
+                  </span>
+                </div>
+                <% if (notif.link) { %>
+                  <a href="<%= notif.link %>" class="notif-action-link">View -></a>
+                <% } %>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div class="empty-state-card card">
+            <div class="empty-state-icon">!</div>
+            <h3>All caught up</h3>
+            <p>You have no notifications yet. They will appear here when there is activity on your account.</p>
+          </div>
+        <% } %>
+      </main>
+    </div>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

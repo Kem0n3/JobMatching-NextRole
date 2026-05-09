@@ -22,4 +22,27 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    function updateNotifBadge() {
+        fetch('/notifications/unread-count')
+            .then((res) => res.json())
+            .then(({ count }) => {
+                const badge = document.getElementById('notifBadge');
+                if (!badge) return;
+
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(() => {}); // Silent fail
+    }
+
+    const notifBell = document.getElementById('notifBell');
+    if (notifBell) {
+        updateNotifBadge();
+        setInterval(updateNotifBadge, 60000);
+    }
 });
