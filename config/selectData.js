@@ -150,6 +150,85 @@ const fieldsOfStudyList = [   // Computer / IT / Engineering
   { id: "sports", text: "Sports Science / Physical Education" },
   { id: "other", text: "Other / Not Listed" } ];
 
+const fieldOfStudyCategories = {
+  engineeringtech: [
+    "computerscience",
+    "softwareengineering",
+    "informationtechnology",
+    "datascience",
+    "cybersecurity",
+    "artificialintelligence",
+    "electricalengineering",
+    "mechanicalengineering",
+    "civilengineering",
+    "electronics",
+    "biomedicalengineering",
+    "aerospaceengineering"
+  ],
+  businessmanagement: [
+    "businessadministration",
+    "management",
+    "finance",
+    "accounting",
+    "economics",
+    "humanresources",
+    "entrepreneurship",
+    "supplychain",
+    "internationalbusiness",
+    "marketing",
+    "advertising"
+  ],
+  humanities_social: [
+    "psychology",
+    "sociology",
+    "philosophy",
+    "education",
+    "english",
+    "history",
+    "politicalscience",
+    "communication",
+    "languages",
+    "journalism",
+    "law",
+    "criminology"
+  ],
+  science_math: [
+    "mathematics",
+    "statistics",
+    "physics",
+    "chemistry",
+    "biology",
+    "environmentalscience",
+    "geology",
+    "biotechnology"
+  ],
+  designcreative: [
+    "graphicdesign",
+    "uidesign",
+    "uxdesign",
+    "multimedia",
+    "interiordesign",
+    "fashiondesign",
+    "film",
+    "architecture"
+  ],
+  healthmedical: [
+    "nursing",
+    "medicine",
+    "publichealth",
+    "pharmacy",
+    "dental",
+    "physiotherapy"
+  ],
+  appliedservices: [
+    "libraryscience",
+    "aviation",
+    "hospitality",
+    "sports"
+  ],
+  other: ["other"]
+};
+
 //Location
 const locationsList = [   
   { id: "kathmandu", text: "Kathmandu" },
@@ -291,6 +370,7 @@ module.exports = {
     skillsList,
     degreeLevelsList,
     fieldsOfStudyList,
+    fieldOfStudyCategories,
     locationsList,
     broaderCategoriesList,
     jobTypeList: jobPostJobTypesList, 

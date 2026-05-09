@@ -27,12 +27,12 @@ async function addSeekerProfileData(req, res, next) {
     if (req.isAuthenticated() && req.user) {
         if (req.user.role === 'seeker') {
             try {
-                const seekerProfile = await JobSeekerProfile.findOne({ user_id: req.user.id }).select('fullName'); // Only select fullName
+                const seekerProfile = await JobSeekerProfile.findOne({ user_id: req.user.id }).select(
+                    'fullName skills categoryExperience degreeLevel fieldOfStudy desiredJobTypes'
+                );
                 if (seekerProfile && seekerProfile.fullName) {
                     res.locals.displayNameForNav = seekerProfile.fullName;
-                    // Calculate completion if profile exists
-                    const fullProfileForCompletion = await JobSeekerProfile.findById(seekerProfile._id); // Fetch full for calc
-                    res.locals.profileCompletion = calculateProfileCompletionPercentage(fullProfileForCompletion);
+                    res.locals.profileCompletion = calculateProfileCompletionPercentage(seekerProfile);
                 } else {
                     res.locals.displayNameForNav = req.user.username; // Fallback if no profile/fullName
                 }

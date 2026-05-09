@@ -15,13 +15,18 @@ const degreeOrder = {
 
 const { fieldOfStudyCategories } = require('../config/selectData');
 
-function findSuperCategory(fieldId) {
-    for (const category in fieldOfStudyCategories) {
-        if (fieldOfStudyCategories[category].includes(fieldId)) {
-            return category;
-        }
+const fieldIdToSuperCategory = Object.entries(fieldOfStudyCategories || {}).reduce((acc, [category, fieldIds]) => {
+    if (Array.isArray(fieldIds)) {
+        fieldIds.forEach(fieldId => {
+            acc[fieldId] = category;
+        });
     }
-    return null;
+    return acc;
+}, {});
+
+function findSuperCategory(fieldId) {
+    if (!fieldId) return null;
+    return fieldIdToSuperCategory[fieldId] || null;
 }
 
 function vectorizeSkills(skills, requiredWeight = 1.0, preferredWeight = 0.5) {

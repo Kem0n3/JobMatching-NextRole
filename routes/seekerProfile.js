@@ -257,7 +257,9 @@ router.post('/', ensureAuthenticated, ensureSeeker, async (req, res, next) => {
         profileFields.resumeOriginalName = resumeDraft.resumeOriginalName || null;
         profileFields.resumeUploadedAt = resumeDraft.resumeUploadedAt || null;
         profileFields.resumeParsedData = {
-            skills: normalizeStringArray(resumeDraft.resumeParsedData && resumeDraft.resumeParsedData.skills)
+            skills: (Array.isArray(resumeDraft.resumeParsedData && resumeDraft.resumeParsedData.skills)
+                ? resumeDraft.resumeParsedData.skills
+                : [])
                 .filter(skill => VALID_SKILL_IDS.has(skill)),
             degreeLevel: (resumeDraft.resumeParsedData && VALID_DEGREE_IDS.has(resumeDraft.resumeParsedData.degreeLevel))
                 ? resumeDraft.resumeParsedData.degreeLevel
