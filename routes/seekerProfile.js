@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const multer = require('multer');
+const fs = require('fs');
 const JobSeekerProfile = require('../models/JobSeekerProfile');
 const User = require('../models/User');
 const upload = require('../config/multerConfig');
@@ -326,7 +327,7 @@ router.post('/resume/upload', ensureAuthenticated, ensureSeeker, handleResumeUpl
     }
 
     try {
-        const parsed = await parseResume(req.file.path);
+        const parsed = await parseResume(req.file.path, { userId: req.user && req.user.id });
         const resumePayload = createResumePayload(req.file, parsed);
         const existingProfile = await JobSeekerProfile.findOne({ user_id: req.user.id });
 
@@ -369,7 +370,26 @@ router.post('/resume/upload', ensureAuthenticated, ensureSeeker, handleResumeUpl
 
         return res.redirect('/profile/form');
     } catch (err) {
-        console.error('Resume upload error:', err);
+        const uploadedFilePath = req.file && req.file.path;
+
+        if (uploadedFilePath) {
+            try {
+                await fs.promises.unlink(uploadedFilePath);
+            } catch (cleanupErr) {
+                console.error('Failed to cleanup uploaded resume after upload error:', {
+                    userId: req.user && req.user.id,
+                    filePath: uploadedFilePath,
+                    cleanupErrorMessage: cleanupErr.message
+                });
+            }
+        }
+
+        console.error('Resume upload error:', {
+            userId: req.user && req.user.id,
+            filePath: uploadedFilePath || null,
+            errorMessage: err.message,
+            errorStack: err.stack
+        });
         if (req.flash) req.flash('error_msg', 'An error occurred during upload. Please try again.');
         return res.redirect(redirectTo);
     }

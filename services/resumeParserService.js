@@ -16,24 +16,32 @@ function containsPhrase(haystack, needle) {
     return haystack.includes(` ${needle} `);
 }
 
-async function extractTextFromPDF(filePath) {
+function logExtractionError(stage, filePath, error, context = {}) {
+    console.error(`[resumeParser] ${stage} failed`, {
+        userId: context.userId || null,
+        filePath,
+        errorMessage: error && error.message ? error.message : String(error)
+    });
+}
+
+async function extractTextFromPDF(filePath, context = {}) {
     try {
         const pdfParse = require('pdf-parse');
         const dataBuffer = fs.readFileSync(filePath);
         const parsed = await pdfParse(dataBuffer);
         return parsed.text || '';
     } catch (error) {
-        console.error('PDF parse error:', error.message);
+        logExtractionError('PDF extraction', filePath, error, context);
         return '';
     }
 }
 
-async function extractTextFromDOCX(filePath) {
+async function extractTextFromDOCX(filePath, context = {}) {
     try {
         const result = await mammoth.extractRawText({ path: filePath });
         return result.value || '';
     } catch (error) {
-        console.error('DOC/DOCX parse error:', error.message);
+        logExtractionError('DOC/DOCX extraction', filePath, error, context);
         return '';
     }
 }
@@ -90,17 +98,22 @@ function extractFieldFromText(rawText) {
     return null;
 }
 
-async function parseResume(filePath) {
+async function parseResume(filePath, context = {}) {
     const extension = path.extname(filePath).toLowerCase();
     let extractedText = '';
 
     if (extension === '.pdf') {
-        extractedText = await extractTextFromPDF(filePath);
+        extractedText = await extractTextFromPDF(filePath, context);
     } else if (extension === '.docx' || extension === '.doc') {
-        extractedText = await extractTextFromDOCX(filePath);
+        extractedText = await extractTextFromDOCX(filePath, context);
     }
 
     if (!extractedText || extractedText.trim() === '') {
+        console.warn('[resumeParser] No text extracted from resume', {
+            userId: context.userId || null,
+            filePath,
+            extension
+        });
         return {
             success: false,
             extractedText: '',
